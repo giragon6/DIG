@@ -1,16 +1,13 @@
 import { Scene } from 'phaser';
+import Mine from '../map/Mine';
+import Player from '../gameobjects/player/Player';
 
 export class Game extends Scene
 {
     camera: Phaser.Cameras.Scene2D.Camera;
-    
-    private player1: Phaser.Physics.Arcade.Sprite;
-    private p1Speed = 160;
-    private player2: Phaser.Physics.Arcade.Sprite;
-    private p2Speed = 160;
-    private ground: Phaser.Physics.Arcade.StaticGroup;
-    private cursors: Phaser.Types.Input.Keyboard.CursorKeys;
-    private wasdKeys: any;
+
+    private player1: Player;
+    private player2: Player;
 
     constructor ()
     {
@@ -19,59 +16,53 @@ export class Game extends Scene
 
     create ()
     {
+        // const mine = new Mine(this, 'mine_map');
+
+        // mine.loadChunks(16);
+
+        this.add.image(0, -200, "background1")
+            .setOrigin(0, 0);
+
         this.camera = this.cameras.main;
         this.camera.setBackgroundColor(0x00ff00);
 
-        this.ground = this.physics.add.staticGroup();
-        this.ground.create(512, 700, 'ground').setScale(2).refreshBody();
-
-        this.player1 = this.physics.add.sprite(100, 450, 'player1');
-        this.player2 = this.physics.add.sprite(200, 450, 'player2');
-
-        this.player1.setBounce(0.2);
-        this.player1.setCollideWorldBounds(true);
-        this.player2.setBounce(0.2);
-        this.player2.setCollideWorldBounds(true);
-
-        this.physics.add.collider(this.player1, this.ground);
-        this.physics.add.collider(this.player2, this.ground);
-
-        this.cursors = this.input.keyboard.createCursorKeys();
-        this.wasdKeys = this.input.keyboard.addKeys({
-            up: 'W',
-            left: 'A',
-            down: 'S',
-            right: 'D'
+        this.anims.create({
+            key: 'playerIdle',
+            frames: this.anims.generateFrameNames('idle', { prefix: 'idle', start: 1, end: 4 }),
+            frameRate: 3,
+            repeat: -1,
+            
         });
+        this.anims.create({
+            key: 'playerRun',
+            frames: this.anims.generateFrameNames('run', { prefix: 'run', start: 1, end: 7 }),
+            frameRate: 12,
+            repeat: -1
+        });
+
+        this.player1 = new Player(this, 100, 450, 'player1', {
+            left: this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.A),
+            right: this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.D),
+            up: this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.W),
+            down: this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.S),
+            attack: this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.Q),
+            interact: this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.E),
+        }, 0xff0000);
+        this.player2 = new Player(this, 200, 450, 'player2', {
+            left: this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT),
+            right: this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT),
+            up: this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.UP),
+            down: this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN),
+            attack: this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.FORWARD_SLASH),
+            interact: this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT),
+        }, 0x0055ff);
+        // this.physics.add.collider(this.player1.sprite, mine.getLayer());
+        // this.physics.add.collider(this.player2.sprite, mine.getLayer());
+
     }
 
     update(time: number, delta: number): void {
-        if (this.wasdKeys.left.isDown) {
-            this.player1.setVelocityX(this.p1Speed * -1);
-        } else if (this.wasdKeys.right.isDown) {
-            this.player1.setVelocityX(this.p1Speed);
-        }
-        else {
-            this.player1.setVelocityX(0);
-        }
-        if (this.wasdKeys.up.isDown && this.player1.body.touching.down) {
-            this.player1.setVelocityY(-330);
-        }
-
-        if (this.cursors.left.isDown) {
-            this.player2.setVelocityX(this.p2Speed * -1);
-        } else if (this.cursors.right.isDown) {
-            this.player2.setVelocityX(this.p2Speed);
-        }
-        else {
-            this.player2.setVelocityX(0);
-        }
-        if (this.cursors.up.isDown && this.player2.body.touching.down) {
-            this.player2.setVelocityY(-330);
-        }
-        if (this.cursors.down.isDown) {
-            this.player2.setVelocityY(330);
-        }
-        
+        this.player1.update();
+        this.player2.update();
     }
 }
