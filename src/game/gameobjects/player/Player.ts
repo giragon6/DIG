@@ -28,7 +28,7 @@ export default class Player {
         this.sprite.setData('id', this.player_key);
 
         this.sprite.data.set('speed', 300);
-        this.sprite.data.set('jumpSpeed', 400);
+        this.sprite.data.set('jumpSpeed', 200);
 
         this._controller = new PlayerController(this.sprite, PlayerStateName.IDLE, this.control_keys, this.scene);
         this._controller.getState().enter();

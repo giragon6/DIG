@@ -12,8 +12,14 @@ export interface ControlKeys {
 export enum BlockType {
     BT_EMPTY = -1,
     BT_DIRT,
-    BT_STONE,
+    BT_COBBLED_STONE, // legally distinct
     BT_BEDROCK,
+    BT_LIGHT_STONE,
+    BT_DIAMOND,
+    BT_DARK_STONE,
+    BT_RUBY,
+    BT_SODALITE,
+    BT_BERYL
 }
 
 export enum SelectionType {

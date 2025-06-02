@@ -47,13 +47,12 @@ export class Preloader extends Scene
             frames: this.anims.generateFrameNames('idle', { prefix: 'idle', start: 1, end: 4 }),
             frameRate: 3,
             repeat: -1,
-            
         });
 
         this.anims.create({
             key: 'playerRun',
-            frames: this.anims.generateFrameNames('run', { prefix: 'run', start: 1, end: 7 }),
-            frameRate: 12,
+            frames: this.anims.generateFrameNames('run', { prefix: 'run', start: 1, end: 8 }),
+            frameRate: 6,
             repeat: -1
         });
 

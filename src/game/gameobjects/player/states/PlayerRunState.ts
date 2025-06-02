@@ -17,8 +17,10 @@ export default class PlayerRunState extends PlayerState {
     update() {
         if (this.keys.left.isDown) {
             this.sprite.setVelocityX(-this.speed);
+            this.sprite.setFlipX(true);
         } else if (this.keys.right.isDown) {
             this.sprite.setVelocityX(this.speed);
+            this.sprite.setFlipX(false);
         } else {
             this.sprite.setVelocityX(0);
             this.controller.setState(PlayerStateName.IDLE);
