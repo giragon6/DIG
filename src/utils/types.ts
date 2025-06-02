@@ -1,3 +1,5 @@
+import Mine from "../game/map/Mine";
+
 export interface ControlKeys {
     left: Phaser.Input.Keyboard.Key;
     right: Phaser.Input.Keyboard.Key;
@@ -14,9 +16,17 @@ export enum BlockType {
     BT_BEDROCK,
 }
 
-export interface Chunk {
-    size: number;
+export enum SelectionType {
+    ST_NONE = -1,
+    ST_BLOCK_WO // White outline
+}
+
+export interface PlayerSelectedTile {
     x: number;
     y: number;
-    data: BlockType[][];
+    type: BlockType;
+}
+
+export abstract class MineScene extends Phaser.Scene {
+    abstract getMine(): Mine;
 }

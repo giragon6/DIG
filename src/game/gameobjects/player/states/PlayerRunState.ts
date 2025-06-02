@@ -1,28 +1,35 @@
-abstract class PlayerRunState {
-    sprite: Phaser.Physics.Arcade.Sprite;
+import { ControlKeys } from "../../../../utils/types";
+import PlayerController, { PlayerStateName } from "../PlayerController";
+import PlayerState from "./PlayerState";
 
-    constructor(sprite: Phaser.Physics.Arcade.Sprite) {
-        this.sprite = sprite;
+export default class PlayerRunState extends PlayerState {
+    speed: number;
+
+    constructor(sprite: Phaser.Physics.Arcade.Sprite, keys: ControlKeys, controller: PlayerController) {
+        super(sprite, keys, controller);
+        this.speed = this.sprite.data.get('speed') || 300;
     }
 
     enter() {
         this.sprite.anims.play('playerRun', true);
-
-        const speed = 600;
-        this.sprite.setVelocityX(this.sprite.flipX ? -speed : speed);
     }
-}
 
-export class PlayerRunLeftState extends PlayerRunState {
-    enter() {
-        this.sprite.setFlipX(true);
-        super.enter();
-    }
-}
+    update() {
+        if (this.keys.left.isDown) {
+            this.sprite.setVelocityX(-this.speed);
+        } else if (this.keys.right.isDown) {
+            this.sprite.setVelocityX(this.speed);
+        } else {
+            this.sprite.setVelocityX(0);
+            this.controller.setState(PlayerStateName.IDLE);
+        }
 
-export class PlayerRunRightState extends PlayerRunState {
-    enter() {
-        this.sprite.setFlipX(false);
-        super.enter();
+        if (this.keys.up.isDown && this.sprite.body!.blocked.down) {
+            this.controller.setState(PlayerStateName.JUMP);
+        }
+
+        if (this.keys.attack.isDown) {
+            this.controller.setState(PlayerStateName.ATTACK);
+        }
     }
 }

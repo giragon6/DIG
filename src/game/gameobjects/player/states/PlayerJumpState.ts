@@ -1,12 +1,29 @@
-export default class PlayerJumpState {
-    sprite: Phaser.Physics.Arcade.Sprite;
+import { ControlKeys } from "../../../../utils/types";
+import PlayerController, { PlayerStateName } from "../PlayerController";
+import PlayerState from "./PlayerState";
 
-    constructor(sprite: Phaser.Physics.Arcade.Sprite) {
-        this.sprite = sprite;
+export default class PlayerJumpState extends PlayerState {
+    jump_speed: number = 300;
+
+    constructor(sprite: Phaser.Physics.Arcade.Sprite, keys: ControlKeys, controller: PlayerController) {
+        super(sprite, keys, controller);
+        this.jump_speed = this.sprite.data.get('jump_speed') || 400;
     }
 
     enter() {
         // this.sprite.anims.play('playerJump', true);
-        this.sprite.setVelocityY(-300);
+        this.sprite.setVelocityY(-this.jump_speed);
+    }
+
+    update() {
+        if (this.sprite.body!.blocked.down) {
+            this.controller.setState(PlayerStateName.IDLE);
+        } else if (this.keys.left.isDown) {
+            this.sprite.setVelocityX(-this.jump_speed);
+        } else if (this.keys.right.isDown) {
+            this.sprite.setVelocityX(this.jump_speed);
+        } else {
+            this.sprite.setVelocityX(0);
+        }
     }
 }

@@ -26,7 +26,6 @@ export class Preloader extends Scene
 
     preload ()
     {
-        //  Load the assets for the game - Replace with your own assets
         this.load.setPath('assets');
 
         this.load.image('logo', 'logo.png');
@@ -38,12 +37,25 @@ export class Preloader extends Scene
         this.load.atlas('idle', '/player/idle.png', '/player/idle.json');
 
         this.load.image('ground_tiles', '/map/tiles.png');
+        this.load.image('selection_tiles', '/selection/selection.png');
     }
 
     create ()
     {
-        //  When all the assets have loaded, it's often worth creating global objects here that the rest of the game can use.
-        //  For example, you can define global animations here, so we can use them in other scenes.
+        this.anims.create({
+            key: 'playerIdle',
+            frames: this.anims.generateFrameNames('idle', { prefix: 'idle', start: 1, end: 4 }),
+            frameRate: 3,
+            repeat: -1,
+            
+        });
+
+        this.anims.create({
+            key: 'playerRun',
+            frames: this.anims.generateFrameNames('run', { prefix: 'run', start: 1, end: 7 }),
+            frameRate: 12,
+            repeat: -1
+        });
 
         //  Move to the MainMenu. You could also swap this for a Scene Transition, such as a camera fade.
         this.scene.start('MainMenu');
