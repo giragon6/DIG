@@ -39,6 +39,7 @@ export class Preloader extends Scene
         this.load.image('ground_tiles', '/map/tiles.png');
         // this.load.image('ground_background_tiles', '/map/darkened-tiles.png');
         this.load.image('selection_tiles', '/selection/selection.png');
+        this.load.image('damage_tiles', '/map/tile-damage.png');
     }
 
     create ()

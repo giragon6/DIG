@@ -1,5 +1,5 @@
 import { DepthLayerConfig, TerrainConfig } from "../../utils/configInterfaces";
-import { BlockType, PlayerSelectedTile } from "../../utils/types";
+import { BlockType, Direction, PlayerSelectedTile } from "../../utils/types";
 import ChunkLoader from "./ChunkLoader";
 import Mine from "./Mine";
 import SelectionMap from "./SelectionMap";
@@ -43,7 +43,7 @@ export default class World {
 
         this.mine = new Mine(this.map, this.terrainConfig);
         this.selectionMap = new SelectionMap(scene, this.map);
-        this.chunkLoader = new ChunkLoader(this.map, this.scene.cameras.main, this.mine, this.chunkWidthTiles, this.chunkHeightTiles);
+        this.chunkLoader = new ChunkLoader(this.map, this.scene.cameras.main, this.mine, this.chunkWidthTiles, this.chunkHeightTiles, this.worldWidthTiles);
 
         this.chunkLoader.loadChunks();
     }
@@ -63,17 +63,27 @@ export default class World {
         }
         return { x: tile.x, y: tile.y, type: tile.index };
     }
+
     getSelectionLayer(): Phaser.Tilemaps.TilemapLayer {
         return this.selectionMap.getLayer();
     }
 
-    digTile(playerId: string): void {
+    digTile(playerId: string, damage: number, autoDestroy: boolean = false): boolean {
         const selectedTile = this.selectionMap.getSelectedTile(playerId);
         if (!selectedTile) {
-            return;
+            return true; // No tile selected
         }
-        this.selectionMap.deselectTile(playerId);
-        this.mine.removeTile(selectedTile);
+        if (autoDestroy) {
+            this.mine.removeTile(selectedTile);
+            this.selectionMap.deselectTile(playerId);
+            return true;
+        }
+        const isTileDestroyed = this.mine.damageTile(selectedTile, damage);
+        if (isTileDestroyed) {
+            this.selectionMap.deselectTile(playerId);
+            return true
+        }
+        return false;
     }
 
     setTerrainConfig(config: TerrainConfig): void {
@@ -85,21 +95,46 @@ export default class World {
         this.terrainConfig.layers.sort((a, b) => a.startDepth - b.startDepth);
     }
 
-    selectTile(tileX: number, tileY: number, playerId: string): boolean {
+    selectTile(tileX: number, tileY: number, playerId: string): PlayerSelectedTile | null {
         this.selectionMap.deselectTile(playerId);
 
         const tile = this.mine.getTileAt(tileX, tileY);
         if (!tile || tile.type === BlockType.BT_EMPTY) {
-            return false; 
+            return null; 
         }
 
-        this.selectionMap.setSelectedTile({
+        const adjacentTiles = {
+            [Direction.UP_LEFT]: this.mine.getTileAt(tileX - 1, tileY - 1), 
+            [Direction.UP]: this.mine.getTileAt(tileX, tileY - 1), 
+            [Direction.UP_RIGHT]: this.mine.getTileAt(tileX + 1, tileY - 1), 
+            [Direction.LEFT]: this.mine.getTileAt(tileX - 1, tileY), 
+            [Direction.RIGHT]: this.mine.getTileAt(tileX + 1, tileY),
+            [Direction.DOWN_LEFT]: this.mine.getTileAt(tileX - 1, tileY + 1),
+            [Direction.DOWN]: this.mine.getTileAt(tileX, tileY + 1),
+            [Direction.DOWN_RIGHT]: this.mine.getTileAt(tileX + 1, tileY + 1)
+        }
+
+        const adjacencies: { [key in Direction]?: boolean } = {
+            [Direction.UP_LEFT]: adjacentTiles[Direction.UP_LEFT] ? adjacentTiles[Direction.UP_LEFT].type !== BlockType.BT_EMPTY : false,
+            [Direction.UP]: adjacentTiles[Direction.UP] ? adjacentTiles[Direction.UP].type !== BlockType.BT_EMPTY : false,
+            [Direction.UP_RIGHT]: adjacentTiles[Direction.UP_RIGHT] ? adjacentTiles[Direction.UP_RIGHT].type !== BlockType.BT_EMPTY : false,
+            [Direction.LEFT]: adjacentTiles[Direction.LEFT] ? adjacentTiles[Direction.LEFT].type !== BlockType.BT_EMPTY : false,
+            [Direction.RIGHT]: adjacentTiles[Direction.RIGHT] ? adjacentTiles[Direction.RIGHT].type !== BlockType.BT_EMPTY : false,
+            [Direction.DOWN_LEFT]: adjacentTiles[Direction.DOWN_LEFT] ? adjacentTiles[Direction.DOWN_LEFT].type !== BlockType.BT_EMPTY : false,
+            [Direction.DOWN]: adjacentTiles[Direction.DOWN] ? adjacentTiles[Direction.DOWN].type !== BlockType.BT_EMPTY : false,
+            [Direction.DOWN_RIGHT]: adjacentTiles[Direction.DOWN_RIGHT] ? adjacentTiles[Direction.DOWN_RIGHT].type !== BlockType.BT_EMPTY : false
+        };
+
+        const selectedTile = {
             x: tileX,
             y: tileY,
-            type: tile.type
-        }, playerId);
+            type: tile.type,
+            adjacencies: adjacencies
+        }
 
-        return true;
+        this.selectionMap.setSelectedTile(selectedTile, playerId);
+
+        return selectedTile;
     }
 
     update(time: number, delta: number): void {

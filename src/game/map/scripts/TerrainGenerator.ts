@@ -1,4 +1,4 @@
-import Random from "../../../utils/random";
+import Random from "../../../utils/Random";
 import { BlockType } from "../../../utils/types";
 
 export default abstract class TerrainGenerator {

@@ -27,10 +27,31 @@ export enum SelectionType {
     ST_BLOCK_WO // White outline
 }
 
+export enum DamageType {
+    DT_LIGHT,
+    DT_MEDIUM,
+    DT_HEAVY,
+    DT_CRITICAL
+}
+
+export enum Direction {
+    UP_LEFT,
+    UP,
+    UP_RIGHT,
+    LEFT,
+    RIGHT,
+    DOWN_LEFT,
+    DOWN,
+    DOWN_RIGHT
+}
+
 export interface PlayerSelectedTile {
     x: number;
     y: number;
     type: BlockType;
+    adjacencies?: {
+        [key in Direction]?: boolean;
+    };
 }
 
 export abstract class WorldScene extends Phaser.Scene {

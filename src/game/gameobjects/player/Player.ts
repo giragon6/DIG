@@ -7,6 +7,7 @@ export default class Player {
     private scene: WorldScene;
     private player_key: string;
     private control_keys: ControlKeys;
+    
 
     private _controller: PlayerController;
     

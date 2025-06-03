@@ -8,6 +8,8 @@ export default class ChunkLoader {
     private chunkWidthTiles: number;
     private chunkHeightTiles: number;
 
+    private worldWidthTiles: number;
+
     private loadedChunks: Set<string> = new Set();
     private chunkLoadDistance: number = 2;
     private chunkUnloadDistance: number = 4;
@@ -17,7 +19,8 @@ export default class ChunkLoader {
         camera: Phaser.Cameras.Scene2D.Camera, 
         mine: Mine,
         chunkWidthTiles: number,
-        chunkHeightTiles: number
+        chunkHeightTiles: number,
+        worldWidthTiles: number
     ) {
         this.map = map;
         this.camera = camera;
@@ -25,6 +28,7 @@ export default class ChunkLoader {
 
         this.chunkWidthTiles = chunkWidthTiles; 
         this.chunkHeightTiles = chunkHeightTiles;
+        this.worldWidthTiles = worldWidthTiles;
     }
 
     loadChunks(): void {
@@ -40,9 +44,9 @@ export default class ChunkLoader {
         const currentChunkX = Math.floor(cameraCenterX / chunkSizeX);
         const currentChunkY = Math.floor(cameraCenterY / chunkSizeY);
 
-        const startX = currentChunkX - this.chunkLoadDistance;
-        const endX = currentChunkX + this.chunkLoadDistance;
-        const startY = currentChunkY - this.chunkLoadDistance;
+        const startX = currentChunkX - this.chunkLoadDistance > 0 ? currentChunkX - this.chunkLoadDistance : 0;
+        const endX = currentChunkX + this.chunkLoadDistance < this.worldWidthTiles ? currentChunkX + this.chunkLoadDistance : this.worldWidthTiles - 1;
+        const startY = currentChunkY - this.chunkLoadDistance > 0 ? currentChunkY - this.chunkLoadDistance : 0;
         const endY = currentChunkY + this.chunkLoadDistance;
 
         for (let x = startX; x <= endX; x++) {

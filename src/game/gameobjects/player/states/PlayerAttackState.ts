@@ -1,4 +1,4 @@
-import { ControlKeys } from "../../../../utils/types";
+import { BlockType, ControlKeys, Direction, PlayerSelectedTile } from "../../../../utils/types";
 import World from "../../../map/World";
 import PlayerController, { PlayerStateName } from "../PlayerController";
 import PlayerState from "./PlayerState";
@@ -8,6 +8,9 @@ export default class PlayerAttackState extends PlayerState {
     private playerId: string;
     private tilePosition: { x: number, y: number };
     private initialPosition: { x: number, y: number } | null;
+    private selectedTile: PlayerSelectedTile | null = null;
+
+    private readonly attackStrength: number = 10; //temp
 
     constructor(sprite: Phaser.Physics.Arcade.Sprite, keys: ControlKeys, controller: PlayerController, world: World) {
         super(sprite, keys, controller);
@@ -26,8 +29,8 @@ export default class PlayerAttackState extends PlayerState {
             x: this.initialPosition.x,
             y: this.initialPosition.y
         };
-        const success = this.world.selectTile(this.tilePosition.x, this.tilePosition.y, this.playerId);
-        if (!success) {
+        this.selectedTile = this.world.selectTile(this.tilePosition.x, this.tilePosition.y, this.playerId);
+        if (this.selectedTile == null) {
             this.controller.setState(PlayerStateName.IDLE);
             return;
         }
@@ -35,12 +38,20 @@ export default class PlayerAttackState extends PlayerState {
     }
 
     update() {
-        if (this.keys.interact.isDown) {
-            this.world.digTile(this.playerId);
-            this.controller.setState(PlayerStateName.IDLE);
-        } else if (this.keys.left.isDown && this.tilePosition.x >= this.initialPosition!.x) {
+        if (Phaser.Input.Keyboard.JustDown(this.keys.interact)) {
+            const isTileDestroyed = this.world.digTile(this.playerId, this.attackStrength);
+            if (isTileDestroyed) this.controller.setState(PlayerStateName.IDLE);
+        } else if (
+            Phaser.Input.Keyboard.JustDown(this.keys.left) && 
+            this.tilePosition.x >= this.initialPosition!.x &&
+            !this.selectedTile?.adjacencies?.[Direction.UP_LEFT]
+        ) {
             this.tilePosition.x -= 1
-        } else if (this.keys.right.isDown && this.tilePosition.x <= this.initialPosition!.x) {
+        } else if (
+            Phaser.Input.Keyboard.JustDown(this.keys.right) && 
+            this.tilePosition.x <= this.initialPosition!.x &&
+            !this.selectedTile?.adjacencies?.[Direction.UP_RIGHT]
+        ) {
             this.tilePosition.x += 1;
         }
 

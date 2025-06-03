@@ -1,11 +1,14 @@
 import { TerrainConfig } from "../../utils/configInterfaces";
 import { BlockType, PlayerSelectedTile } from "../../utils/types";
 import TerrainGenerator from "./scripts/TerrainGenerator";
+import TileDamageMap from "./TileDamageMap";
 
 export default class Mine {
     private map: Phaser.Tilemaps.Tilemap;
     private groundLayer: Phaser.Tilemaps.TilemapLayer; 
     private terrainConfig: TerrainConfig;
+    
+    private tileDamageMap: TileDamageMap;
 
     constructor(map: Phaser.Tilemaps.Tilemap, terrainConfig: TerrainConfig) {
         this.map = map;
@@ -19,6 +22,9 @@ export default class Mine {
                 this.groundLayer.setCollision(BlockType[key as keyof typeof BlockType]);
             }
         }
+
+        const damageTileset = this.map.addTilesetImage('damage_tiles', 'damage_tiles');
+        this.tileDamageMap = new TileDamageMap(this.map, damageTileset!);
 
     }
 
@@ -126,6 +132,16 @@ export default class Mine {
         
     //     return chunk;
     // }    
+
+    damageTile(selectedTile: PlayerSelectedTile, damage: number): boolean {
+        const tileX = selectedTile.x;
+        const tileY = selectedTile.y;
+        const tile = this.groundLayer.getTileAt(tileX, tileY);
+        if (!tile || tile.index === BlockType.BT_EMPTY) {
+            return false; 
+        }
+        return this.tileDamageMap.applyDamage(tileX, tileY, damage, this.groundLayer);
+    }
 
     removeTile(selectedTile: PlayerSelectedTile): boolean {
         const tileX = selectedTile.x;
