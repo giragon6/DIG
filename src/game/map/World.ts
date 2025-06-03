@@ -20,18 +20,12 @@ export default class World {
 
     private terrainConfig: TerrainConfig = {
         surfaceLevel: 5,
-        layers: [
-            { startDepth: 0, endDepth: 1, blockType: BlockType.BT_EMPTY },
-            { startDepth: 2, endDepth: 3, blockType: BlockType.BT_DIRT },
-            { startDepth: 4, endDepth: 30, blockType: BlockType.BT_LIGHT_STONE },
-            { startDepth: 30, endDepth: 50, blockType: BlockType.BT_DARK_STONE },
-            { startDepth: 50, endDepth: Infinity, blockType: BlockType.BT_DARK_STONE }
-        ],
+        layers: [],
         oreLayers: [
-            { startDepth: 10, endDepth: 20, blockType: BlockType.BT_DIAMOND, chance: 0.05 },
-            { startDepth: 15, endDepth: 25, blockType: BlockType.BT_RUBY, chance: 0.1 },
-            { startDepth: 20, endDepth: 30, blockType: BlockType.BT_SODALITE, chance: 0.15 },
-            { startDepth: 25, endDepth: 40, blockType: BlockType.BT_BERYL, chance: 0.2 }
+            { startDepth: 10, endDepth: 20, blockType: BlockType.BT_DIAMOND, chance: 0.005 },
+            { startDepth: 15, endDepth: 25, blockType: BlockType.BT_RUBY, chance: 0.01 },
+            { startDepth: 20, endDepth: 30, blockType: BlockType.BT_SODALITE, chance: 0.015 },
+            { startDepth: 25, endDepth: 40, blockType: BlockType.BT_BERYL, chance: 0.02 }
         ]
     };
 
@@ -39,6 +33,12 @@ export default class World {
         this.scene = scene;
         this.worldWidthTiles = 100;
         this.worldHeightTiles = 1000;
+
+        this.addDepthLayerByIndex(0, 5, BlockType.BT_EMPTY);
+        this.addDepthLayerByIndex(1, 5, BlockType.BT_DIRT);
+        this.addDepthLayerByIndex(2, 5, BlockType.BT_LIGHT_STONE);
+        this.addDepthLayerByIndex(3, 5, BlockType.BT_DARK_STONE);
+        this.addDepthLayerByIndex(4, 5, BlockType.BT_BEDROCK);
 
         this.map = scene.make.tilemap({
             tileWidth: 64,
@@ -49,7 +49,14 @@ export default class World {
 
         this.mine = new Mine(this.map, this.terrainConfig);
         this.selectionMap = new SelectionMap(scene, this.map);
-        this.chunkLoader = new ChunkLoader(this.map, this.scene.cameras.main, this.mine, this.chunkWidthTiles, this.chunkHeightTiles, this.worldWidthTiles);
+        this.chunkLoader = new ChunkLoader(
+            this.map,
+            this.scene.cameras.main,
+            this.mine,
+            this.chunkWidthTiles,
+            this.chunkHeightTiles,
+            this.worldWidthTiles
+        );
 
         this.chunkLoader.loadChunks();
     }
@@ -101,6 +108,23 @@ export default class World {
         this.terrainConfig.layers.sort((a, b) => a.startDepth - b.startDepth);
     }
 
+    addDepthLayerByIndex(layerIndex: number, layerHeight: number, blockType: BlockType): void {
+        if (layerIndex < 0 || layerIndex > this.terrainConfig.layers.length) {
+            console.error("Invalid layer index");
+            return;
+        }
+        const newLayer: DepthLayerConfig = {
+            startDepth: this.terrainConfig.layers[layerIndex - 1]?.endDepth || 0,
+            endDepth: this.terrainConfig.layers[layerIndex - 1]?.endDepth + layerHeight || layerHeight,
+            blockType: blockType 
+        };
+
+        this.terrainConfig.layers.splice(layerIndex, 0, newLayer);
+        this.terrainConfig.layers.sort((a, b) => a.startDepth - b.startDepth);
+
+        console.log(this.terrainConfig.layers)
+    }
+
     selectTile(tileX: number, tileY: number, playerId: string): PlayerSelectedTile | null {
         this.selectionMap.deselectTile(playerId);
 
@@ -141,6 +165,10 @@ export default class World {
         this.selectionMap.setSelectedTile(selectedTile, playerId);
 
         return selectedTile;
+    }
+
+    deselectTile(playerId: string): void {
+        this.selectionMap.deselectTile(playerId);
     }
 
     update(time: number, delta: number): void {

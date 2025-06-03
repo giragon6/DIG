@@ -41,29 +41,55 @@ export default class PlayerAttackState extends PlayerState {
         if (Phaser.Input.Keyboard.JustDown(this.keys.interact)) {
             const isTileDestroyed = this.world.digTile(this.playerId, this.attackStrength);
             if (isTileDestroyed) this.controller.setState(PlayerStateName.IDLE);
-        } else if (
-            Phaser.Input.Keyboard.JustDown(this.keys.left) && 
-            this.tilePosition.x >= this.initialPosition!.x
-        ) {
-            this.tilePosition.x -= 1;
-            if (this.tilePosition.y === this.initialPosition!.y - 1) {
-                this.tilePosition.y += 1;
-            } else if (this.selectedTile?.adjacencies?.[Direction.UP_LEFT]) {
-                this.tilePosition.y -= 1
-            }        
+        } // Confirm attack
+        
+        else if (Phaser.Input.Keyboard.JustDown(this.keys.up)) {
+            this.world.deselectTile(this.playerId);
+            this.controller.setState(PlayerStateName.IDLE);
+        } // Cancel attack
+        
+        else if (Phaser.Input.Keyboard.JustDown(this.keys.left)) {
+
+            if (this.tilePosition.x >= this.initialPosition!.x) {
+                if (this.tilePosition.y === this.initialPosition!.y - 2) {
+                    this.tilePosition.y += 1;
+                } else {
+                    this.tilePosition.x -= 1;
+                    if (this.tilePosition.y === this.initialPosition!.y - 1) {
+                        this.tilePosition.y += 1;
+                    } else if (this.selectedTile?.adjacencies?.[Direction.UP_LEFT]) {
+                        this.tilePosition.y -= 1
+                    }
+                }
+            } 
+            
+            else if (this.tilePosition.x == this.initialPosition!.x - 1 && this.tilePosition.y == this.initialPosition!.y - 1) {
+                this.tilePosition.y -= 1;
+            } // Go up if already at left edge
+
             this.selectedTile = this.world.selectTile(this.tilePosition.x, this.tilePosition.y, this.playerId);
-        } else if (
-            Phaser.Input.Keyboard.JustDown(this.keys.right) && 
-            this.tilePosition.x <= this.initialPosition!.x
-        ) {
-            console.log('current selected tile position:', this.selectedTile);
-            this.tilePosition.x += 1;
-            if (this.tilePosition.y === this.initialPosition!.y - 1) {
-                this.tilePosition.y += 1;
-            } else if (this.selectedTile?.adjacencies?.[Direction.UP_RIGHT]) {
-                this.tilePosition.y -= 1
-            }
+        } 
+        
+        else if (Phaser.Input.Keyboard.JustDown(this.keys.right)) {
+
+            if (this.tilePosition.x <= this.initialPosition!.x) {
+                if (this.tilePosition.y === this.initialPosition!.y - 2) {
+                    this.tilePosition.y += 1;
+                } else {
+                    this.tilePosition.x += 1;
+                    if (this.tilePosition.y === this.initialPosition!.y - 1) {
+                        this.tilePosition.y += 1;
+                    } else if (this.selectedTile?.adjacencies?.[Direction.UP_RIGHT]) {
+                        this.tilePosition.y -= 1
+                    }
+                }
+            } 
+            
+            else if (this.tilePosition.x == this.initialPosition!.x + 1 && this.tilePosition.y == this.initialPosition!.y - 1) {
+                this.tilePosition.y -= 1;
+            } // Go up if already at right edge
+
             this.selectedTile = this.world.selectTile(this.tilePosition.x, this.tilePosition.y, this.playerId);
-        }
+        } 
     }
 }

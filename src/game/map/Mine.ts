@@ -11,7 +11,13 @@ export default class Mine {
     
     private tileDamageMap: TileDamageMap;
 
-    constructor(map: Phaser.Tilemaps.Tilemap, terrainConfig: TerrainConfig) {
+    private seed: string;
+
+    constructor(map: Phaser.Tilemaps.Tilemap, terrainConfig: TerrainConfig, seed: string | null = null) {
+        if (!seed) {
+            seed = `mine_${Math.floor(Math.random() * 1000000)}`;
+        }
+        this.seed = seed;
         this.map = map;
         this.terrainConfig = terrainConfig;
 
@@ -55,7 +61,7 @@ export default class Mine {
     }
 
     private generateSurfaceHeights(chunkWidth: number, chunkStartY: number): number[] {
-        const seed = `surface_${Math.floor(chunkStartY / 16)}`; 
+        const seed = `${this.seed}_surface_${Math.floor(chunkStartY / 16)}`; 
         
         return TerrainGenerator.randomWalkSmooth(
             chunkWidth,
@@ -71,7 +77,7 @@ export default class Mine {
         const variations: number[][] = [];
         
         this.terrainConfig.layers.forEach((layer, layerIndex) => {
-            const seed = `layer_${layerIndex}_${Math.floor(chunkStartY / 16)}`;
+            const seed = `${this.seed}_layer_${layerIndex}_${Math.floor(chunkStartY / 16)}`;
             const baseThickness = layer.endDepth - layer.startDepth;
             const maxVariation = Math.max(2, Math.floor(baseThickness * 0.3)); 
             
@@ -111,7 +117,7 @@ export default class Mine {
     }
 
     private addOreVeins(chunk: number[][], chunkX: number, chunkY: number): number[][] {
-        const seed = `ore_${chunkX}_${chunkY}`;
+        const seed = `${this.seed}_ore_${chunkX}_${chunkY}`;
         const rand = new Random(seed);
 
         let chanceMultiplier = 1.0;
@@ -135,7 +141,7 @@ export default class Mine {
                     chunk.length,
                     0.1, // frequency
                     1.0, // amplitude
-                    seed + `_${i}`
+                    seed + `${this.seed}_${i}`
                 ).map(row => row.map(value => value > 0.5 ? 1 : 0)); // convert to binary path
                 
                 for (let x = 0; x < chunk[0].length; x++) {

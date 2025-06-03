@@ -12,7 +12,7 @@ export default class PlayerIdleState extends PlayerState {
             this.controller.setState(PlayerStateName.RUN);
         } else if (this.keys.right.isDown) {
             this.controller.setState(PlayerStateName.RUN);
-        } else if (this.keys.up.isDown && this.sprite.body!.blocked.down) {
+        } else if (Phaser.Input.Keyboard.JustDown(this.keys.up) && this.sprite.body!.blocked.down) {
             this.controller.setState(PlayerStateName.JUMP);
         } else if (this.keys.attack.isDown) {
             this.controller.setState(PlayerStateName.ATTACK);
