@@ -94,4 +94,26 @@ export default abstract class TerrainGenerator {
         
         return heights;
     }
+
+    public static perlinNoise(
+        width: number,
+        height: number,
+        frequency: number = 0.1,
+        amplitude: number = 1.0,
+        seed: string
+    ): number[][] {
+        const noise = Array.from({ length: width }, () => new Array(height).fill(0));
+        const rand = new Random(seed);
+
+        for (let x = 0; x < width; x++) {
+            for (let y = 0; y < height; y++) {
+                const nx = x * frequency;
+                const ny = y * frequency;
+                const value = Math.sin(nx + ny + rand.float() * Math.PI * 2) * amplitude;
+                noise[x][y] = value;
+            }
+        }
+
+        return noise;
+    }
 }

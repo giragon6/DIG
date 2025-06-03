@@ -26,6 +26,12 @@ export default class World {
             { startDepth: 4, endDepth: 30, blockType: BlockType.BT_LIGHT_STONE },
             { startDepth: 30, endDepth: 50, blockType: BlockType.BT_DARK_STONE },
             { startDepth: 50, endDepth: Infinity, blockType: BlockType.BT_DARK_STONE }
+        ],
+        oreLayers: [
+            { startDepth: 10, endDepth: 20, blockType: BlockType.BT_DIAMOND, chance: 0.05 },
+            { startDepth: 15, endDepth: 25, blockType: BlockType.BT_RUBY, chance: 0.1 },
+            { startDepth: 20, endDepth: 30, blockType: BlockType.BT_SODALITE, chance: 0.15 },
+            { startDepth: 25, endDepth: 40, blockType: BlockType.BT_BERYL, chance: 0.2 }
         ]
     };
 

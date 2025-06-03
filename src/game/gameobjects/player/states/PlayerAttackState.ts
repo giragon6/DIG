@@ -37,25 +37,33 @@ export default class PlayerAttackState extends PlayerState {
         this.sprite.setVelocityX(0);
     }
 
-    update() {
+    update() {        
         if (Phaser.Input.Keyboard.JustDown(this.keys.interact)) {
             const isTileDestroyed = this.world.digTile(this.playerId, this.attackStrength);
             if (isTileDestroyed) this.controller.setState(PlayerStateName.IDLE);
         } else if (
             Phaser.Input.Keyboard.JustDown(this.keys.left) && 
-            this.tilePosition.x >= this.initialPosition!.x &&
-            !this.selectedTile?.adjacencies?.[Direction.UP_LEFT]
+            this.tilePosition.x >= this.initialPosition!.x
         ) {
-            this.tilePosition.x -= 1
+            this.tilePosition.x -= 1;
+            if (this.tilePosition.y === this.initialPosition!.y - 1) {
+                this.tilePosition.y += 1;
+            } else if (this.selectedTile?.adjacencies?.[Direction.UP_LEFT]) {
+                this.tilePosition.y -= 1
+            }        
+            this.selectedTile = this.world.selectTile(this.tilePosition.x, this.tilePosition.y, this.playerId);
         } else if (
             Phaser.Input.Keyboard.JustDown(this.keys.right) && 
-            this.tilePosition.x <= this.initialPosition!.x &&
-            !this.selectedTile?.adjacencies?.[Direction.UP_RIGHT]
+            this.tilePosition.x <= this.initialPosition!.x
         ) {
+            console.log('current selected tile position:', this.selectedTile);
             this.tilePosition.x += 1;
+            if (this.tilePosition.y === this.initialPosition!.y - 1) {
+                this.tilePosition.y += 1;
+            } else if (this.selectedTile?.adjacencies?.[Direction.UP_RIGHT]) {
+                this.tilePosition.y -= 1
+            }
+            this.selectedTile = this.world.selectTile(this.tilePosition.x, this.tilePosition.y, this.playerId);
         }
-
-        this.world.selectTile(this.tilePosition.x, this.tilePosition.y, this.playerId);
-
     }
 }
