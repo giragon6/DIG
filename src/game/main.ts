@@ -32,7 +32,7 @@ const config: Phaser.Types.Core.GameConfig = {
         MainMenu,
         MainGame,
         GameOver
-    ]
+    ],
 };
 
 const StartGame = (parent: string) => {

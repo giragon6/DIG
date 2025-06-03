@@ -19,26 +19,21 @@ export default abstract class TerrainGenerator {
         height: number,
         maxStartHeight: number = height,
         minStartHeight: number = 0,
-        bottomLayer: BlockType = BlockType.BT_DIRT,
-        topLayer: BlockType = BlockType.BT_EMPTY,
         minSectionSize: number,
         seed: string
     ): BlockType[][] {
         const dataWidth = width;
         const dataHeight = height;
 
-        let data = Array.from({ length: dataWidth }, () => new Array(dataHeight).fill(bottomLayer));
+        let data = Array.from({ length: dataWidth }, () => new Array(dataHeight).fill(0));
 
         const rand = new Random(seed);
 
         let lastHeight: integer = rand.range(minStartHeight, maxStartHeight + 1);
 
-        //Used to determine which direction to go
         let nextMove = 0;
-        //Used to keep track of the current sections width
         let sectionWidth = 0;
 
-        //Work through the array width
         for (let x = 0; x < dataWidth; x++)
         {
             nextMove = rand.range(0,2); // 0 = down, 1 = up
@@ -58,10 +53,45 @@ export default abstract class TerrainGenerator {
 
             for (let y = lastHeight; y >= 0; y--)
                 {
-                    data[y][x] = topLayer;
+                    data[y][x] = 1;
                 }
             }
 
             return data;
+    }
+
+    public static layerBoundaryWalk(
+        width: number,
+        baseDepth: number,
+        maxVariation: number,
+        minSectionSize: number,
+        seed: string
+    ): number[] {
+        const rand = new Random(seed);
+        const heights: number[] = [];
+        
+        let currentHeight = baseDepth + rand.range(-maxVariation, maxVariation + 1);
+        let sectionWidth = 0;
+        let direction = rand.range(0, 2) === 0 ? -1 : 1;
+        
+        for (let x = 0; x < width; x++) {
+            if (sectionWidth >= minSectionSize && rand.float() < 0.3) {
+                direction = rand.range(0, 2) === 0 ? -1 : 1;
+                sectionWidth = 0;
+            }
+            
+            if (rand.float() < 0.4) { // 40% chance to change height
+                const newHeight = currentHeight + direction;
+                if (newHeight >= baseDepth - maxVariation && 
+                    newHeight <= baseDepth + maxVariation) {
+                    currentHeight = newHeight;
+                }
+            }
+            
+            heights.push(currentHeight);
+            sectionWidth++;
+        }
+        
+        return heights;
     }
 }

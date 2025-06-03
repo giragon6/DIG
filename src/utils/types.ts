@@ -1,4 +1,4 @@
-import Mine from "../game/map/Mine";
+import World from "../game/map/World";
 
 export interface ControlKeys {
     left: Phaser.Input.Keyboard.Key;
@@ -33,6 +33,6 @@ export interface PlayerSelectedTile {
     type: BlockType;
 }
 
-export abstract class MineScene extends Phaser.Scene {
-    abstract getMine(): Mine;
+export abstract class WorldScene extends Phaser.Scene {
+    abstract getWorld(): World;
 }

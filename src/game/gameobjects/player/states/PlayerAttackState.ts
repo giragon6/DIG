@@ -1,23 +1,23 @@
 import { ControlKeys } from "../../../../utils/types";
-import Mine from "../../../map/Mine";
+import World from "../../../map/World";
 import PlayerController, { PlayerStateName } from "../PlayerController";
 import PlayerState from "./PlayerState";
 
 export default class PlayerAttackState extends PlayerState {
-    private mine: Mine;
+    private world: World;
     private playerId: string;
     private tilePosition: { x: number, y: number };
     private initialPosition: { x: number, y: number } | null;
 
-    constructor(sprite: Phaser.Physics.Arcade.Sprite, keys: ControlKeys, controller: PlayerController, mine: Mine) {
+    constructor(sprite: Phaser.Physics.Arcade.Sprite, keys: ControlKeys, controller: PlayerController, world: World) {
         super(sprite, keys, controller);
-        this.mine = mine;
+        this.world = world;
         this.playerId = this.sprite.getData('id');
     }
 
     enter() {
         // this.sprite.anims.play('playerPrepareMine', true);
-        this.initialPosition = this.mine.getTilePosition(this.sprite.x, this.sprite.y + this.sprite.height * this.sprite.scaleY);
+        this.initialPosition = this.world.getTilePosition(this.sprite.x, this.sprite.y + this.sprite.height * this.sprite.scaleY);
         if (this.initialPosition == null) {
             this.controller.setState(PlayerStateName.IDLE);
             return;
@@ -26,7 +26,7 @@ export default class PlayerAttackState extends PlayerState {
             x: this.initialPosition.x,
             y: this.initialPosition.y
         };
-        const success = this.mine.selectTile(this.tilePosition.x, this.tilePosition.y, this.playerId);
+        const success = this.world.selectTile(this.tilePosition.x, this.tilePosition.y, this.playerId);
         if (!success) {
             this.controller.setState(PlayerStateName.IDLE);
             return;
@@ -36,7 +36,7 @@ export default class PlayerAttackState extends PlayerState {
 
     update() {
         if (this.keys.interact.isDown) {
-            this.mine.digTile(this.playerId);
+            this.world.digTile(this.playerId);
             this.controller.setState(PlayerStateName.IDLE);
         } else if (this.keys.left.isDown && this.tilePosition.x >= this.initialPosition!.x) {
             this.tilePosition.x -= 1
@@ -44,7 +44,7 @@ export default class PlayerAttackState extends PlayerState {
             this.tilePosition.x += 1;
         }
 
-        this.mine.selectTile(this.tilePosition.x, this.tilePosition.y, this.playerId);
+        this.world.selectTile(this.tilePosition.x, this.tilePosition.y, this.playerId);
 
     }
 }

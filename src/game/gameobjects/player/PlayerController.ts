@@ -1,9 +1,8 @@
-import { ControlKeys, MineScene } from "../../../utils/types";
+import { ControlKeys, WorldScene } from "../../../utils/types";
 import PlayerAttackState from "./states/PlayerAttackState";
 import PlayerIdleState from "./states/PlayerIdleState";
 import PlayerJumpState from "./states/PlayerJumpState";
 import PlayerRunState from "./states/PlayerRunState";
-import PlayerRun from "./states/PlayerRunState";
 import PlayerState from "./states/PlayerState";
 
 export enum PlayerStateName {
@@ -17,12 +16,12 @@ export default class PlayerController {
     private states: { [key: string]: PlayerState };
     private currentState: PlayerState;
 
-    constructor(sprite: Phaser.Physics.Arcade.Sprite, initialState: PlayerStateName = PlayerStateName.IDLE, keys: ControlKeys, scene: MineScene) {
+    constructor(sprite: Phaser.Physics.Arcade.Sprite, initialState: PlayerStateName = PlayerStateName.IDLE, keys: ControlKeys, scene: WorldScene) {
         this.states = {
             idle: new PlayerIdleState(sprite, keys, this),
             run: new PlayerRunState(sprite, keys, this),
             jump: new PlayerJumpState(sprite, keys, this),
-            attack: new PlayerAttackState(sprite, keys, this, scene.getMine())
+            attack: new PlayerAttackState(sprite, keys, this, scene.getWorld())
         };
         this.setState(initialState);
     }

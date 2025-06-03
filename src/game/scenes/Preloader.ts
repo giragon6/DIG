@@ -37,6 +37,7 @@ export class Preloader extends Scene
         this.load.atlas('idle', '/player/idle.png', '/player/idle.json');
 
         this.load.image('ground_tiles', '/map/tiles.png');
+        // this.load.image('ground_background_tiles', '/map/darkened-tiles.png');
         this.load.image('selection_tiles', '/selection/selection.png');
     }
 

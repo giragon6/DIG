@@ -39,4 +39,8 @@ export default class Random {
     range(min: number, max: number): number {
         return Math.floor(this.getRandom() * (max - min)) + min;
     }
+
+    float() {
+        return this.getRandom();
+    }
 }
