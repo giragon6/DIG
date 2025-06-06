@@ -30,7 +30,7 @@ export default class PlayerAttackState extends PlayerState {
 
     enter() {
         // this.sprite.anims.play('playerPrepareMine', true);
-        this.initialPosition = this.world.getTilePosition(this.sprite.x, this.sprite.y + this.sprite.height * this.sprite.scaleY);
+        this.initialPosition = this.world.getTilePosition(this.sprite.x + this.sprite.width, this.sprite.y + this.sprite.height * this.sprite.scaleY * 2);
         if (this.initialPosition == null) {
             this.controller.setState(PlayerStateName.IDLE);
             return;
@@ -78,8 +78,12 @@ export default class PlayerAttackState extends PlayerState {
                 }
             } 
             
-            else if (this.tilePosition.x == this.initialPosition!.x - 1 && this.tilePosition.y == this.initialPosition!.y - 1) {
-                this.tilePosition.y -= 1;
+            else if (
+              this.tilePosition.x == this.initialPosition!.x - 1 &&
+              this.tilePosition.y == this.initialPosition!.y - 1 &&
+              this.selectedTile?.adjacencies?.[Direction.UP]
+            ) {
+              this.tilePosition.y -= 1;
             } // Go up if already at left edge
 
             this.selectedTile = this.world.selectTile(this.tilePosition.x, this.tilePosition.y, this.playerId);
@@ -100,8 +104,12 @@ export default class PlayerAttackState extends PlayerState {
                 }
             } 
             
-            else if (this.tilePosition.x == this.initialPosition!.x + 1 && this.tilePosition.y == this.initialPosition!.y - 1) {
-                this.tilePosition.y -= 1;
+            else if (
+              this.tilePosition.x == this.initialPosition!.x + 1 &&
+              this.tilePosition.y == this.initialPosition!.y - 1 &&
+              this.selectedTile?.adjacencies?.[Direction.UP]
+            ) {
+              this.tilePosition.y -= 1;
             } // Go up if already at right edge
 
             this.selectedTile = this.world.selectTile(this.tilePosition.x, this.tilePosition.y, this.playerId);

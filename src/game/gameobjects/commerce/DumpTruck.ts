@@ -26,7 +26,7 @@ export class DumpTruck extends Phaser.GameObjects.Container {
 
     private createSprite(): void {
         this.sprite = this.scene.add.sprite(0, 0, 'dump_truck');
-        this.sprite.setDisplaySize(128, 96);
+        this.sprite.setDisplaySize(320, 192);
         this.add(this.sprite);
     }
 

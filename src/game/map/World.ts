@@ -61,7 +61,59 @@ export default class World {
 
         this.chunkLoader.loadChunks();
     }
-    
+
+        getSurfaceY(x: number): number {
+        const tileX = Math.floor(x / this.map.tileWidth);
+        const startY = 0;
+        const maxY = this.worldHeightTiles;
+
+        for (let tileY = startY; tileY < maxY; tileY++) {
+            const tile = this.mine.getLayer().getTileAt(tileX, tileY);
+            
+            if (tile && tile.index !== BlockType.BT_EMPTY) {
+                return (tileY * this.map.tileHeight); 
+            }
+        }
+
+        return this.terrainConfig.surfaceLevel * this.map.tileHeight;
+    }
+
+    getValidSpawnPosition(preferredX?: number): { x: number, y: number } {
+        const x = preferredX || this.getRandomSpawnX();
+        const y = this.getSurfaceY(x) - 64;
+
+        return { x, y };
+    }
+
+    private getRandomSpawnX(): number {
+        const margin = 100; 
+        const minX = margin;
+        const maxX = this.worldWidthTiles * this.map.tileWidth - margin;
+        
+        return Phaser.Math.Between(minX, maxX);
+    }
+
+    isValidSpawnPosition(x: number, y: number, width: number = 32, height: number = 32): boolean {
+        const tileWidth = this.map.tileWidth;
+        const tileHeight = this.map.tileHeight;
+        
+        const startTileX = Math.floor(x / tileWidth);
+        const endTileX = Math.floor((x + width) / tileWidth);
+        const startTileY = Math.floor(y / tileHeight);
+        const endTileY = Math.floor((y + height) / tileHeight);
+
+        for (let tileX = startTileX; tileX <= endTileX; tileX++) {
+            for (let tileY = startTileY; tileY <= endTileY; tileY++) {
+                const tile = this.mine.getLayer().getTileAt(tileX, tileY);
+                if (tile && tile.index !== BlockType.BT_EMPTY) {
+                    return false; 
+                }
+            }
+        }
+
+        return true; 
+    }
+
     getMap(): Phaser.Tilemaps.Tilemap {
         return this.map;
     }

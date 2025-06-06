@@ -1,1 +1,53 @@
-{"frames":{"idle1":{"frame":{"x":42,"y":0,"w":11,"h":14},"rotated":false,"trimmed":false,"spriteSourceSize":{"x":0,"y":0,"w":11,"h":14},"sourceSize":{"w":11,"h":14}},"idle2":{"frame":{"x":42,"y":15,"w":11,"h":14},"rotated":false,"trimmed":false,"spriteSourceSize":{"x":0,"y":0,"w":11,"h":14},"sourceSize":{"w":11,"h":14}},"idle3":{"frame":{"x":28,"y":30,"w":11,"h":14},"rotated":false,"trimmed":false,"spriteSourceSize":{"x":0,"y":0,"w":11,"h":14},"sourceSize":{"w":11,"h":14}},"idle4":{"frame":{"x":42,"y":30,"w":11,"h":14},"rotated":false,"trimmed":false,"spriteSourceSize":{"x":0,"y":0,"w":11,"h":14},"sourceSize":{"w":11,"h":14}},"idle5":{"frame":{"x":0,"y":0,"w":13,"h":14},"rotated":false,"trimmed":false,"spriteSourceSize":{"x":0,"y":0,"w":13,"h":14},"sourceSize":{"w":13,"h":14}},"idle6":{"frame":{"x":14,"y":0,"w":13,"h":14},"rotated":false,"trimmed":false,"spriteSourceSize":{"x":0,"y":0,"w":13,"h":14},"sourceSize":{"w":13,"h":14}},"idle7":{"frame":{"x":28,"y":0,"w":13,"h":14},"rotated":false,"trimmed":false,"spriteSourceSize":{"x":0,"y":0,"w":13,"h":14},"sourceSize":{"w":13,"h":14}},"idle8":{"frame":{"x":28,"y":14,"w":13,"h":14},"rotated":false,"trimmed":false,"spriteSourceSize":{"x":0,"y":0,"w":13,"h":14},"sourceSize":{"w":13,"h":14}},"idle9":{"frame":{"x":0,"y":15,"w":13,"h":14},"rotated":false,"trimmed":false,"spriteSourceSize":{"x":0,"y":0,"w":13,"h":14},"sourceSize":{"w":13,"h":14}},"idle10":{"frame":{"x":14,"y":15,"w":13,"h":14},"rotated":false,"trimmed":false,"spriteSourceSize":{"x":0,"y":0,"w":13,"h":14},"sourceSize":{"w":13,"h":14}},"idle11":{"frame":{"x":0,"y":30,"w":13,"h":14},"rotated":false,"trimmed":false,"spriteSourceSize":{"x":0,"y":0,"w":13,"h":14},"sourceSize":{"w":13,"h":14}},"idle12":{"frame":{"x":14,"y":30,"w":13,"h":14},"rotated":false,"trimmed":false,"spriteSourceSize":{"x":0,"y":0,"w":13,"h":14},"sourceSize":{"w":13,"h":14}}},"meta":{"app":"https://www.leshylabs.com/apps/sstool/","version":"Leshy SpriteSheet Tool v0.8.4","image":"spritesheet.png","size":{"w":53,"h":43},"scale":1}}
+{ "frames": {
+   "idle0": {
+    "frame": { "x": 1, "y": 1, "w": 13, "h": 16 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 1, "y": 0, "w": 11, "h": 14 },
+    "sourceSize": { "w": 13, "h": 14 },
+    "duration": 100
+   },
+   "idle1": {
+    "frame": { "x": 1, "y": 1, "w": 13, "h": 16 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 1, "y": 0, "w": 11, "h": 14 },
+    "sourceSize": { "w": 13, "h": 14 },
+    "duration": 100
+   },
+   "idle2": {
+    "frame": { "x": 1, "y": 18, "w": 13, "h": 15 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 1, "y": 1, "w": 11, "h": 13 },
+    "sourceSize": { "w": 13, "h": 14 },
+    "duration": 100
+   },
+   "idle3": {
+    "frame": { "x": 1, "y": 18, "w": 13, "h": 15 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 1, "y": 1, "w": 11, "h": 13 },
+    "sourceSize": { "w": 13, "h": 14 },
+    "duration": 100
+   }
+ },
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.x-dev",
+  "image": "idle.png",
+  "format": "RGBA8888",
+  "size": { "w": 15, "h": 34 },
+  "scale": "1",
+  "frameTags": [
+   { "name": "side", "from": 0, "to": 3, "direction": "forward", "color": "#000000ff" }
+  ],
+  "layers": [
+   { "name": "hand 2", "opacity": 255, "blendMode": "normal" },
+   { "name": "body", "opacity": 255, "blendMode": "normal" },
+   { "name": "hand ", "opacity": 255, "blendMode": "normal" }
+  ],
+  "slices": [
+  ]
+ }
+}

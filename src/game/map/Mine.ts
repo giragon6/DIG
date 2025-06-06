@@ -35,6 +35,19 @@ export default class Mine {
 
     }
 
+    getSurfaceAtX(worldX: number): number {
+        const tileX = Math.floor(worldX / 64); // Assuming 64px tile size
+        
+        for (let y = 0; y < this.map.height; y++) {
+            const tile = this.groundLayer.getTileAt(tileX, y);
+            if (tile && tile.index !== BlockType.BT_EMPTY) {
+                return y * 64 - 16; 
+            }
+        }
+        
+        return this.terrainConfig.surfaceLevel * 64 - 16;
+    }
+
     private generateChunk(chunkWidthTiles: number, chunkHeightTiles: number, x: number, y: number): number[][] {
         const startY = y * chunkHeightTiles;
 

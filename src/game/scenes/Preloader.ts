@@ -26,7 +26,7 @@ export class Preloader extends Scene
     {
         this.load.setPath('assets');
 
-        this.load.image('logo', 'logo.png');
+        this.load.image('logo', 'title.png');
 
         this.load.image('background1', '/backgrounds/game_bg1.png');
 
@@ -38,20 +38,22 @@ export class Preloader extends Scene
         // this.load.image('ground_background_tiles', '/map/darkened-tiles.png');
         this.load.image('selection_tiles', '/selection/selection.png');
         this.load.image('damage_tiles', '/map/tile-damage.png');
+
+        this.load.image('dump_truck', '/truck.png');
     }
 
     create ()
     {
         this.anims.create({
             key: 'playerIdle',
-            frames: this.anims.generateFrameNames('idle', { prefix: 'idle', start: 1, end: 4 }),
+            frames: this.anims.generateFrameNames('idle', { prefix: 'idle', start: 0, end: 3 }),
             frameRate: 3,
             repeat: -1,
         });
 
         this.anims.create({
-            key: 'playerRun',
-            frames: this.anims.generateFrameNames('run', { prefix: 'run', start: 1, end: 8 }),
+            key: 'playerRun', 
+            frames: this.anims.generateFrameNames('run', { prefix: 'run', start: 0, end: 6 }),
             frameRate: 6,
             repeat: -1
         });

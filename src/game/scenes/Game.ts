@@ -33,9 +33,9 @@ export class Game extends WorldScene {
         // this.bg.setOrigin(0, 0);
         // this.bg.setTileScale(0.5, 0.5); 
 
-        const p1Spawn = {x: 100, y: 100}; // this.world.getValidSpawnPosition('p1');
-        const p2Spawn = {x: 200, y: 100}; // this.world.getValidSpawnPosition('p2');
-        const dumpTruckSpawn = {x: 500, y: 100}; // this.world.getValidSpawnPosition('dumpTruck');
+        const p1Spawn = this.world.getValidSpawnPosition(200);
+        const p2Spawn = this.world.getValidSpawnPosition(400);
+        const dumpTruckSpawn = this.world.getValidSpawnPosition(1000);
 
         this.player1 = new Player(this, p1Spawn.x, p1Spawn.y, 'player1', {
             left: this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.A),

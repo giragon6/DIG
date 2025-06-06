@@ -18,11 +18,12 @@ export default class Player {
 
         this.sprite = this.scene.physics.add
             .sprite(x, y, this.player_key)
-            .setBodySize(11,14,false)
-            .setOrigin(0.5, 0.5)
+            .setSize(30, 30) 
+            .setOrigin(0, 0)
+            .setBodySize(14,14,false)
             .setMaxVelocity(300, 400)
             .setBounce(0.2)
-            .setScale(5)
+            .setScale(4)
             .setCollideWorldBounds(true);
 
         this.sprite.setTint(tint);
