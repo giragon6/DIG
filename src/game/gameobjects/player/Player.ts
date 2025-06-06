@@ -1,16 +1,16 @@
-import { ControlKeys, WorldScene } from "../../../utils/types";
+import { ControlKeys } from "../../../utils/types/controlTypes";
+import { WorldScene } from "../../../utils/types/sceneTypes";
+import { BlockType } from "../../../utils/types/tileTypes";
 import PlayerController, { PlayerStateName } from "./PlayerController";
+import { Inventory } from "./inventory/Inventory";
 
 export default class Player {
-
     sprite: Phaser.Physics.Arcade.Sprite;
     private scene: WorldScene;
     private player_key: string;
     private control_keys: ControlKeys;
-    
-
     private _controller: PlayerController;
-    
+    public inventory: Inventory;
     constructor(scene: WorldScene, x: number, y: number, player_key: string, control_keys: ControlKeys, tint: number = 0xffffff) {
         this.scene = scene;
         this.player_key = player_key;
@@ -23,24 +23,43 @@ export default class Player {
             .setMaxVelocity(300, 400)
             .setBounce(0.2)
             .setScale(5)
-            .setCollideWorldBounds(true)
+            .setCollideWorldBounds(true);
 
         this.sprite.setTint(tint);
-
         this.sprite.setData('id', this.player_key);
-
         this.sprite.data.set('speed', 300);
         this.sprite.data.set('jumpSpeed', 250);
 
-        this._controller = new PlayerController(this.sprite, PlayerStateName.IDLE, this.control_keys, this.scene);
+        this.inventory = new Inventory(this.player_key);
+
+        this._controller = new PlayerController(
+          this.sprite,
+          PlayerStateName.IDLE,
+          this.control_keys,
+          this.scene,
+          this.inventory
+        );
         this._controller.getState().enter();
+    }
+
+    getControlKeys(): ControlKeys {
+        return this.control_keys;
     }
 
     update() {
         this._controller.getState().update();
     }
 
+    getDamageForMining(): number {
+        return this.inventory.getMiningDamage();
+    }
+
+    addBlockToInventory(blockType: BlockType, quantity: number = 1): void {
+        this.inventory.addBlocks(blockType, quantity);
+    }
+
     destroy() {
-    this.sprite.destroy();
+        this.inventory.destroy();
+        this.sprite.destroy();
     }
 }

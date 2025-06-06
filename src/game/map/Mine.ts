@@ -1,6 +1,6 @@
 import { OreLayerConfig, TerrainConfig } from "../../utils/configInterfaces";
 import Random from "../../utils/Random";
-import { BlockType, PlayerSelectedTile } from "../../utils/types";
+import { BlockType, PlayerSelectedTile } from "../../utils/types/tileTypes";
 import TerrainGenerator from "./scripts/TerrainGenerator";
 import TileDamageMap from "./TileDamageMap";
 

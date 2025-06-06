@@ -1,4 +1,4 @@
-import { BlockType, PlayerSelectedTile, SelectionType } from "../../utils/types";
+import { PlayerSelectedTile, SelectionType } from "../../utils/types/tileTypes";
 
 export default class SelectionMap {
     private selectionLayer: Phaser.Tilemaps.TilemapLayer; 

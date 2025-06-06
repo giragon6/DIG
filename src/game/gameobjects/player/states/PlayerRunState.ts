@@ -1,4 +1,4 @@
-import { ControlKeys } from "../../../../utils/types";
+import { ControlKeys } from "../../../../utils/types/controlTypes";
 import PlayerController, { PlayerStateName } from "../PlayerController";
 import PlayerState from "./PlayerState";
 

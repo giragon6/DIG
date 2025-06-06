@@ -1,5 +1,6 @@
 import { DepthLayerConfig, TerrainConfig } from "../../utils/configInterfaces";
-import { BlockType, Direction, PlayerSelectedTile } from "../../utils/types";
+import { Direction } from "../../utils/types/controlTypes";
+import { BlockType, PlayerSelectedTile } from "../../utils/types/tileTypes";
 import ChunkLoader from "./ChunkLoader";
 import Mine from "./Mine";
 import SelectionMap from "./SelectionMap";
@@ -60,7 +61,7 @@ export default class World {
 
         this.chunkLoader.loadChunks();
     }
-
+    
     getMap(): Phaser.Tilemaps.Tilemap {
         return this.map;
     }

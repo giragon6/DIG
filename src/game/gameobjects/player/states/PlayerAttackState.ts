@@ -1,5 +1,7 @@
-import { BlockType, ControlKeys, Direction, PlayerSelectedTile } from "../../../../utils/types";
+import { ControlKeys, Direction } from "../../../../utils/types/controlTypes";
+import { PlayerSelectedTile } from "../../../../utils/types/tileTypes";
 import World from "../../../map/World";
+import { Inventory } from "../inventory/Inventory";
 import PlayerController, { PlayerStateName } from "../PlayerController";
 import PlayerState from "./PlayerState";
 
@@ -9,13 +11,21 @@ export default class PlayerAttackState extends PlayerState {
     private tilePosition: { x: number, y: number };
     private initialPosition: { x: number, y: number } | null;
     private selectedTile: PlayerSelectedTile | null = null;
+    private inventory: Inventory;
 
     private readonly attackStrength: number = 10; //temp
 
-    constructor(sprite: Phaser.Physics.Arcade.Sprite, keys: ControlKeys, controller: PlayerController, world: World) {
+    constructor(
+        sprite: Phaser.Physics.Arcade.Sprite,
+        keys: ControlKeys,
+        controller: PlayerController,
+        world: World,
+        inventory: Inventory
+    ) {
         super(sprite, keys, controller);
         this.world = world;
         this.playerId = this.sprite.getData('id');
+        this.inventory = inventory;
     }
 
     enter() {
@@ -39,14 +49,19 @@ export default class PlayerAttackState extends PlayerState {
 
     update() {        
         if (Phaser.Input.Keyboard.JustDown(this.keys.interact)) {
-            const isTileDestroyed = this.world.digTile(this.playerId, this.attackStrength);
-            if (isTileDestroyed) this.controller.setState(PlayerStateName.IDLE);
-        } // Confirm attack
+            if(!this.inventory.isAtCapacity()) {
+                const isTileDestroyed = this.world.digTile(this.playerId, this.attackStrength);
+                if (isTileDestroyed) {
+                    if (this.selectedTile) this.inventory.addBlocks(this.selectedTile!.type, 1);
+                    this.controller.setState(PlayerStateName.IDLE);
+                }
+            }
+        } // Confirm attack/dig
         
         else if (Phaser.Input.Keyboard.JustDown(this.keys.up)) {
             this.world.deselectTile(this.playerId);
             this.controller.setState(PlayerStateName.IDLE);
-        } // Cancel attack
+        } // Cancel attack/dig
         
         else if (Phaser.Input.Keyboard.JustDown(this.keys.left)) {
 

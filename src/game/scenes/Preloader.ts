@@ -9,10 +9,8 @@ export class Preloader extends Scene
 
     init ()
     {
-        //  We loaded this image in our Boot Scene, so we can display it here
         this.add.image(512, 384, 'menu_background');
 
-        // Progress bar outline
         this.add.rectangle(512, 384, 468, 32).setStrokeStyle(1, 0xffffff);
 
         const bar = this.add.rectangle(512-230, 384, 4, 28, 0xffffff);
@@ -36,7 +34,7 @@ export class Preloader extends Scene
 
         this.load.atlas('idle', '/player/idle.png', '/player/idle.json');
 
-        this.load.image('ground_tiles', '/map/tiles.png');
+        this.load.spritesheet('ground_tiles', '/map/tiles.png', { frameWidth: 64 });
         // this.load.image('ground_background_tiles', '/map/darkened-tiles.png');
         this.load.image('selection_tiles', '/selection/selection.png');
         this.load.image('damage_tiles', '/map/tile-damage.png');

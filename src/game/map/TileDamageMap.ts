@@ -1,4 +1,4 @@
-import { BlockType, DamageType } from "../../utils/types";
+import { BlockType, DamageType } from "../../utils/types/tileTypes";
 
 interface DamageData {
     damage: number;
