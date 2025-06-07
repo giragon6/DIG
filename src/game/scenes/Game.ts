@@ -1,21 +1,23 @@
-import Player from '../gameobjects/player/Player';
 import { WorldScene } from '../../utils/types/sceneTypes';
-import World from '../map/World';
-import { InventoryUI } from '../gameobjects/UI/InventoryUI';
-import { DumpTruck } from '../gameobjects/commerce/DumpTruck';
 import { LootBoxType } from '../capitalism/LootBox';
+import { DumpTruck } from '../gameobjects/commerce/DumpTruck';
 import { Tool } from '../gameobjects/player/inventory/items/Item';
+import Player from '../gameobjects/player/Player';
+import { InventoryUI } from '../gameobjects/UI/InventoryUI';
+import { MoneyDisplayUI } from '../gameobjects/UI/MoneyDisplayUI';
+import World from '../map/World';
+import { CameraManager } from '../utils/CameraManager';
 
 export class Game extends WorldScene {
     camera: Phaser.Cameras.Scene2D.Camera;
 
-    private player1: Player;
-    private player2: Player;
+    private players: Map<string, Player> = new Map();
     private world: World;
     // private bg: Phaser.GameObjects.TileSprite;
 
-    private inventoryUI1: InventoryUI;
-    private inventoryUI2: InventoryUI;
+    private inventoryUIs: Map<string, InventoryUI> = new Map();
+    private moneyDisplayUI: MoneyDisplayUI;
+    private cameraManager: CameraManager;
 
     private playerMap: Map<string, Player> = new Map();
 
@@ -24,66 +26,180 @@ export class Game extends WorldScene {
 
     private currentLootBoxPlayer: string | null = null;
 
+    private playerConfigs = [
+        {
+            id: 'player1',
+            keys: {
+                left: Phaser.Input.Keyboard.KeyCodes.A,
+                right: Phaser.Input.Keyboard.KeyCodes.D,
+                up: Phaser.Input.Keyboard.KeyCodes.W,
+                down: Phaser.Input.Keyboard.KeyCodes.S,
+                attack: Phaser.Input.Keyboard.KeyCodes.Q,
+                interact: Phaser.Input.Keyboard.KeyCodes.E,
+            },
+            tint: 0xff0000,
+            spawnOffset: 200
+        },
+        {
+            id: 'player2',
+            keys: {
+                left: Phaser.Input.Keyboard.KeyCodes.LEFT,
+                right: Phaser.Input.Keyboard.KeyCodes.RIGHT,
+                up: Phaser.Input.Keyboard.KeyCodes.UP,
+                down: Phaser.Input.Keyboard.KeyCodes.DOWN,
+                attack: Phaser.Input.Keyboard.KeyCodes.FORWARD_SLASH,
+                interact: Phaser.Input.Keyboard.KeyCodes.SHIFT,
+            },
+            tint: 0x0055ff,
+            spawnOffset: 400
+        },
+        {
+            id: 'player3',
+            keys: {
+                left: Phaser.Input.Keyboard.KeyCodes.F,
+                right: Phaser.Input.Keyboard.KeyCodes.H,
+                up: Phaser.Input.Keyboard.KeyCodes.T,
+                down: Phaser.Input.Keyboard.KeyCodes.G,
+                attack: Phaser.Input.Keyboard.KeyCodes.R,
+                interact: Phaser.Input.Keyboard.KeyCodes.Y,
+            },
+            tint: 0x00ff00,
+            spawnOffset: 600
+        },
+        {
+            id: 'player4',
+            keys: {
+                left: Phaser.Input.Keyboard.KeyCodes.J,
+                right: Phaser.Input.Keyboard.KeyCodes.L,
+                up: Phaser.Input.Keyboard.KeyCodes.I,
+                down: Phaser.Input.Keyboard.KeyCodes.K,
+                attack: Phaser.Input.Keyboard.KeyCodes.U,
+                interact: Phaser.Input.Keyboard.KeyCodes.O,
+            },
+            tint: 0xffff00,
+            spawnOffset: 800
+        }
+    ];
+
+    private activePlayerCount: number;
+
     constructor() {
         super('Game');
     }
 
-    create() {
+    create(data: {numPlayers: number}) {
         this.physics.world.setBounds(0, 0, 2304, 1296, true, true, true, false);
         this.camera = this.cameras.main;
         this.world = new World(this);
+        this.cameraManager = new CameraManager(this);
+        this.activePlayerCount = data.numPlayers;
 
-        // this.bg = this.add.tileSprite(0, 0, 2304, 1296, 'background1')   
-        // this.bg.setScrollFactor(1);
-        // this.bg.setOrigin(0, 0);
-        // this.bg.setTileScale(0.5, 0.5); 
-
-        const p1Spawn = this.world.getValidSpawnPosition(200);
-        const p2Spawn = this.world.getValidSpawnPosition(400);
-        const dumpTruckSpawn = this.world.getValidSpawnPosition(1000);
-
-        this.player1 = new Player(this, p1Spawn.x, p1Spawn.y, 'player1', {
-            left: this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.A),
-            right: this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.D),
-            up: this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.W),
-            down: this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.S),
-            attack: this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.Q),
-            interact: this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.E),
-        }, 0xff0000);
-
-        this.player2 = new Player(this, p2Spawn.x, p2Spawn.y, 'player2', {
-            left: this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT),
-            right: this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT),
-            up: this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.UP),
-            down: this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN),
-            attack: this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.FORWARD_SLASH),
-            interact: this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT),
-        }, 0x0055ff);
-
-        this.playerMap.set('player1', this.player1);
-        this.playerMap.set('player2', this.player2);
-
-        this.dumpTruck = new DumpTruck(this, dumpTruckSpawn.x, dumpTruckSpawn.y - 32, 300);
-        this.dumpTruck.on('toolPurchased', this.handleToolPurchased, this);
-
-        this.playerNearDumpTruck.set('player1', false);
-        this.playerNearDumpTruck.set('player2', false);       
-
+        this.createPlayers();
+        this.setupDumpTruck();
         this.setupInputHandlers();
-
-        this.dumpTruck.getLootBoxUI().on('lootBoxUIClosed', this.handleLootBoxUIClosed, this);
-
-        this.dumpTruck.getLootBoxUI().setDepth(1000);
-
-        this.inventoryUI1 = new InventoryUI(this, 120, 50, this.player1.inventory).setScrollFactor(0);
-        this.inventoryUI2 = new InventoryUI(this, this.cameras.main.width - 120, 50, this.player2.inventory).setScrollFactor(0);
-
-        this.camera.startFollow(this.player1.sprite, true, 0.05, 0.05);
-        this.physics.add.collider(this.player1.sprite, this.world.getMineLayer());
-        this.physics.add.collider(this.player2.sprite, this.world.getMineLayer());
+        this.setupCameras();
+        this.setupInventoryUIs();
+        this.setupCollisions();
     }
 
-    private setupInputHandlers(): void {
+    private createPlayers(): void {
+        for (let i = 0; i < this.activePlayerCount; i++) {
+            const config = this.playerConfigs[i];
+            const spawn = this.world.getValidSpawnPosition(config.spawnOffset);
+            
+            const controlKeys = {
+                left: this.input.keyboard!.addKey(config.keys.left),
+                right: this.input.keyboard!.addKey(config.keys.right),
+                up: this.input.keyboard!.addKey(config.keys.up),
+                down: this.input.keyboard!.addKey(config.keys.down),
+                attack: this.input.keyboard!.addKey(config.keys.attack),
+                interact: this.input.keyboard!.addKey(config.keys.interact),
+            };
+
+            const player = new Player(this, spawn.x, spawn.y, config.id, controlKeys, config.tint);
+            
+            this.players.set(config.id, player);
+            this.playerMap.set(config.id, player);
+            this.playerNearDumpTruck.set(config.id, false);
+        }
+    }
+
+    private setupDumpTruck(): void {
+        const dumpTruckSpawn = this.world.getValidSpawnPosition(1000);
+        this.dumpTruck = new DumpTruck(this, dumpTruckSpawn.x, dumpTruckSpawn.y - 32, 300);
+        this.dumpTruck.on('toolPurchased', this.handleToolPurchased, this);
+        this.dumpTruck.getLootBoxUI().on('lootBoxUIClosed', this.handleLootBoxUIClosed, this);
+        this.dumpTruck.getLootBoxUI().setDepth(1000);
+    }
+
+    private setupCameras(): void {
+        const playerIds = Array.from(this.players.keys());
+        const targets = playerIds.map(id => this.players.get(id)!.sprite);
+        this.cameraManager.createCamerasForPlayers(playerIds, targets);
+    }
+
+    private setupInventoryUIs(): void {
+        const playerIds = Array.from(this.players.keys());
+        
+        this.moneyDisplayUI = new MoneyDisplayUI(this, this.scale.width / 2 - (playerIds.length % 2 == 0 ? MoneyDisplayUI.getWidth() / 2 + 20 : 0), 30);
+        this.add.existing(this.moneyDisplayUI);
+        this.camera.ignore(this.moneyDisplayUI);
+        this.cameraManager.ignoreForAllPlayerCameras(this.moneyDisplayUI);
+        this.cameraManager.addToUICamera(this.moneyDisplayUI);
+                
+        playerIds.forEach((playerId, index) => {
+            const player = this.players.get(playerId)!;
+            const camera = this.cameraManager.getCameraForPlayer(playerId);
+
+            const cameraScale = (1 / playerIds.length) * 0.2 + 0.8;
+            
+            if (camera) {
+                const inventoryUI = new InventoryUI(
+                    this, 
+                    130 * cameraScale,
+                    100 * cameraScale, 
+                    player.inventory
+                );
+                
+                this.setupCameraVisibility(inventoryUI, camera, playerIds);
+
+                inventoryUI.setScale(cameraScale);
+                
+                this.inventoryUIs.set(playerId, inventoryUI);
+
+                this.add.existing(inventoryUI);
+                this.camera.ignore(inventoryUI)
+            }
+        });
+
+    }
+
+    private setupCameraVisibility(ui: InventoryUI, playerCamera: Phaser.Cameras.Scene2D.Camera, allPlayerIds: string[]): void {
+        this.cameraManager.getCameras().forEach((camera) => {
+            if (camera !== playerCamera) {
+                camera.ignore(ui.getAllUIElements());
+            }
+        });
+        
+        playerCamera.ignore([]);
+        
+        allPlayerIds.forEach(otherPlayerId => {
+            if (otherPlayerId !== ui.getPlayerId()) {
+                const otherUI = this.inventoryUIs.get(otherPlayerId);
+                if (otherUI) {
+                    playerCamera.ignore(otherUI.getAllUIElements());
+                }
+            }
+        });
+    }
+
+    private setupCollisions(): void {
+        this.players.forEach((player) => {
+            this.physics.add.collider(player.sprite, this.world.getMineLayer());
+        });
+    }
+
+        private setupInputHandlers(): void {
         for (const [playerId, player] of this.playerMap.entries()) {
             player.getControlKeys().down.on('down', () => {
                 if (!this.currentLootBoxPlayer || this.currentLootBoxPlayer !== playerId) {
@@ -110,8 +226,7 @@ export class Game extends WorldScene {
 
     update(time: number, delta: number): void {
         this.world.update(time, delta);
-        this.player1.update();
-        this.player2.update();
+        this.players.forEach(player => player.update());
 
         this.updateDumpTruckProximity();
         this.checkLootBoxUIRange();
@@ -132,38 +247,25 @@ export class Game extends WorldScene {
         const dumpTruckX = this.dumpTruck.x;
         const dumpTruckY = this.dumpTruck.y;
         
-        const player1Distance = Phaser.Math.Distance.Between(
-            this.player1.sprite.x, this.player1.sprite.y,
-            dumpTruckX, dumpTruckY
-        );
+        this.players.forEach((player, playerId) => {
+            const distance = Phaser.Math.Distance.Between(
+                player.sprite.x, player.sprite.y,
+                dumpTruckX, dumpTruckY
+            );
+            
+            const wasNear = this.playerNearDumpTruck.get(playerId);
+            const isNear = distance <= this.dumpTruck.getInteractionDistance();
+            
+            this.playerNearDumpTruck.set(playerId, isNear);
+            
+            if (isNear && !wasNear) {
+                console.log(`${playerId} entered dump truck range`);
+            } else if (!isNear && wasNear) {
+                console.log(`${playerId} left dump truck range`);
+            }
+        });
         
-        const player2Distance = Phaser.Math.Distance.Between(
-            this.player2.sprite.x, this.player2.sprite.y,
-            dumpTruckX, dumpTruckY
-        );
-        
-        const player1WasNear = this.playerNearDumpTruck.get('player1');
-        const player2WasNear = this.playerNearDumpTruck.get('player2');
-        
-        const player1IsNear = player1Distance <= this.dumpTruck.getInteractionDistance();
-        const player2IsNear = player2Distance <= this.dumpTruck.getInteractionDistance();
-        
-        this.playerNearDumpTruck.set('player1', player1IsNear);
-        this.playerNearDumpTruck.set('player2', player2IsNear);
-        
-        if (player1IsNear && !player1WasNear) {
-            console.log('Player 1 entered dump truck range');
-        } else if (!player1IsNear && player1WasNear) {
-            console.log('Player 1 left dump truck range');
-        }
-        
-        if (player2IsNear && !player2WasNear) {
-            console.log('Player 2 entered dump truck range');
-        } else if (!player2IsNear && player2WasNear) {
-            console.log('Player 2 left dump truck range');
-        }
-        
-        const anyPlayerNear = player1IsNear || player2IsNear;
+        const anyPlayerNear = Array.from(this.playerNearDumpTruck.values()).some(near => near);
         this.dumpTruck.setPlayerNearby(anyPlayerNear);
     }
 

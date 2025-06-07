@@ -26,10 +26,10 @@ export default class World {
         surfaceLevel: 5,
         layers: [],
         oreLayers: [
-            { startDepth: 10, endDepth: 20, blockType: BlockType.BT_DIAMOND, chance: 0.005 },
-            { startDepth: 15, endDepth: 25, blockType: BlockType.BT_RUBY, chance: 0.01 },
-            { startDepth: 20, endDepth: 30, blockType: BlockType.BT_SODALITE, chance: 0.015 },
-            { startDepth: 25, endDepth: 40, blockType: BlockType.BT_BERYL, chance: 0.02 }
+            { startDepth: 10, endDepth: 20, blockType: BlockType.BT_DIAMOND, chance: 0.0005 },
+            { startDepth: 15, endDepth: 25, blockType: BlockType.BT_RUBY, chance: 0.001 },
+            { startDepth: 20, endDepth: 30, blockType: BlockType.BT_SODALITE, chance: 0.0015 },
+            { startDepth: 25, endDepth: 40, blockType: BlockType.BT_BERYL, chance: 0.002 }
         ]
     };
 

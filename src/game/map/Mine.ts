@@ -148,7 +148,7 @@ export default class Mine {
         for (let i = 0; i < validOres.length; i++) {
             const ore: OreLayerConfig = validOres[i];
             const chance = ore.chance;
-            if (ore || rand.float() < (chance ? chance * chanceMultiplier : 0.1)) {
+            if (ore || rand.float() < chance!) {
                 const veinPath = TerrainGenerator.perlinNoise(
                     chunk[0].length,
                     chunk.length,

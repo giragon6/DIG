@@ -1,92 +1,58 @@
 // import { BlockType } from "../../../utils/types";
-import { MoneyManager } from "../../capitalism/MoneyManager";
 import { Inventory } from "../player/inventory/Inventory";
 
 export class InventoryUI extends Phaser.GameObjects.Container {    
     private inventory: Inventory;
-    // private blockDisplays: Map<BlockType, Phaser.GameObjects.Container> = new Map();
-    private totalBlockCountDisplay: Phaser.GameObjects.Container = this.scene.add.container(-35, 50);
-    private moneyDisplay: Phaser.GameObjects.Container;
+    private totalBlockCountDisplay: Phaser.GameObjects.Container;
     private toolDisplay: Phaser.GameObjects.Container;
     private isToolSelectorVisible: boolean = false;
-    private moneyManager: MoneyManager; 
+    private allUIElements: Phaser.GameObjects.GameObject[] = [];
 
-    constructor(scene: Phaser.Scene, x: number, y: number, inventory: Inventory) {
-        super(scene, x, y);
+    constructor(
+        scene: Phaser.Scene, 
+        inventoryX: number, 
+        inventoryY: number, 
+        inventory: Inventory
+    ) {
+        super(scene, inventoryX, inventoryY);
         this.inventory = inventory;
-        this.moneyManager = MoneyManager.getInstance();
         
-        this.createMoneyDisplay();
-        this.createBlockDisplays();
-        this.createToolDisplay();
+        this.createBlockDisplays(0, 0);
+        this.createToolDisplay(0, - 40);
         this.setupEventHandlers();
         
-        scene.add.existing(this);
+        this.setScrollFactor(0);  
+        this.setDepth(2000);       
     }
 
-    private createMoneyDisplay(): void {
-        this.moneyDisplay = this.scene.add.container(this.scene.scale.width/2 - 130, -10);
-        
-        const bg = this.scene.add.rectangle(0, 0, 130, 25, 0x228822);
-        bg.setStrokeStyle(2, 0x44aa44);
-        
-        const moneyText = this.scene.add.text(0, 0, '$0', {
-            fontSize: '16px',
-            color: '#ffffff'
-        }).setOrigin(0.5, 0.5);
+    private createBlockDisplays(x: number, y: number): void {   
+        this.totalBlockCountDisplay = new Phaser.GameObjects.Container(this.scene, x, y);
 
-        this.moneyDisplay.add([bg, moneyText]);
-        this.moneyDisplay.setData('moneyText', moneyText);
-        this.add(this.moneyDisplay);
-        
-        this.updateMoneyDisplay();
-    }
-
-    private createBlockDisplays(): void {
-        const bg = this.scene.add.rectangle(0, 0, 130, 25, 0x222222);
-
-        const countText = this.scene.add.text(0, 0, '0/0', {
-            fontSize: '16px',
-            color: '#ffffff'
-        }).setOrigin(0.5, 0.5);
-
+        const bg = new Phaser.GameObjects.Rectangle(this.scene, 0, 0, 130, 25, 0x222222)
         bg.setStrokeStyle(2, 0x666666);
+
+        const countText = new Phaser.GameObjects.Text(this.scene, 0, 0, '0/0', {
+            fontSize: '16px',
+            color: '#ffffff'
+        }).setOrigin(0.5, 0.5);
+
         this.totalBlockCountDisplay.add([bg, countText]);
         this.totalBlockCountDisplay.setData('countText', countText);
+        this.totalBlockCountDisplay.setScrollFactor(0);
+
         this.add(this.totalBlockCountDisplay);
-
-        // const blockTypes = Object.values(BlockType).filter(value => typeof value === 'number') as BlockType[];
-
-        // blockTypes.forEach((blockType, index) => {
-        //     const container = this.scene.add.container(-80, 20 + index * 40);
-            
-        //     const icon = this.scene.add.image(0, 0, `ground_tiles`, blockType);
-        //     icon.setDisplaySize(32, 32);
-
-        //     const countText = this.scene.add.text(40, 0, '0', {
-        //         fontSize: '16px',
-        //         color: '#ffffff'
-        //     }).setOrigin(0, 0.5);
-            
-        //     container.add([icon, countText]);
-        //     container.setData('blockType', blockType);
-        //     container.setData('countText', countText);
-            
-        //     this.blockDisplays.set(blockType, container);
-        //     this.add(container);
-        // });
-
+        
+        this.allUIElements.push(this.totalBlockCountDisplay);
         this.updateTotalBlockCount();
-        // this.updateAllBlockCounts();
     }
 
-    private createToolDisplay(): void {
-        this.toolDisplay = this.scene.add.container(0, 0);
+    private createToolDisplay(x: number, y: number): void {
+        this.toolDisplay = new Phaser.GameObjects.Container(this.scene, x, y);
         
-        const toolBg = this.scene.add.rectangle(0, 0, 200, 60, 0x333333);
+        const toolBg = new Phaser.GameObjects.Rectangle(this.scene, 0, 0, 200, 60, 0x333333);
         toolBg.setStrokeStyle(2, 0x666666);
         
-        const toolIcon = this.scene.add.image(-60, 0, 'basic_pickaxe');
+        const toolIcon = new Phaser.GameObjects.Image(this.scene, -60, 0, 'basic_pickaxe');
         toolIcon.setDisplaySize(40, 40);
         toolIcon.setData('toolIcon', true);
         
@@ -115,18 +81,31 @@ export class InventoryUI extends Phaser.GameObjects.Container {
         this.toolDisplay.setData('leftArrow', leftArrow);
         this.toolDisplay.setData('rightArrow', rightArrow);
         this.toolDisplay.setData('toolIndex', toolIndex);
-        
+        this.toolDisplay.setScrollFactor(0);
+
         this.add(this.toolDisplay);
+        
+        this.allUIElements.push(this.toolDisplay);
         this.updateToolDisplay();
     }
 
+    getAllUIElements(): Phaser.GameObjects.GameObject[] {
+        return [
+            this.totalBlockCountDisplay,
+            this.toolDisplay,
+            ...this.allUIElements
+        ];
+    }
+
+    getPlayerId(): string {
+        return this.inventory.getPlayerId();
+    }
+
     private setupEventHandlers(): void {
-        console.log('Setting up InventoryUI event handlers');
         this.inventory.on('blocksChanged', this.onBlocksChanged, this);
         this.inventory.on('toolSelected', this.onToolSelected, this);
         this.inventory.on('toolAdded', this.onToolAdded, this);
         this.inventory.on('uiVisibilityChanged', (data: {playerId: string, isVisible: boolean}) => {
-            console.log(`UI visibility changed for player ${data.playerId}: ${data.isVisible}`);
             if (data.playerId !== this.inventory.getPlayerId()) return;
             if (data.isVisible) {
                 this.showToolSelector();
@@ -134,25 +113,10 @@ export class InventoryUI extends Phaser.GameObjects.Container {
                 this.hideToolSelector();
             } 
         });
-        this.moneyManager.on('moneyChanged', this.onMoneyChanged, this);
-    }
-
-    private onMoneyChanged(data: any): void {
-        this.updateMoneyDisplay();
-    }
-
-    private updateMoneyDisplay(): void {
-        const display = this.moneyDisplay;
-        if (display) {
-            const moneyText = display.getData('moneyText') as Phaser.GameObjects.Text;
-            const money = this.moneyManager.getMoney();
-            moneyText.setText(`$${money}`);
-        }
     }
 
     private onBlocksChanged(): void {
         this.updateTotalBlockCount();
-        // this.updateBlockCount(data.blockType);
     }
 
     private onToolSelected(): void {
@@ -172,25 +136,6 @@ export class InventoryUI extends Phaser.GameObjects.Container {
             countText.setText(count.toString() + '/' + max.toString());
         }
     }
-
-    // private updateBlockCount(blockType: BlockType): void {
-    //     const display = this.blockDisplays.get(blockType);
-    //     if (display) {
-    //         const countText = display.getData('countText') as Phaser.GameObjects.Text;
-    //         const count = this.inventory.getBlockCount(blockType);
-    //         countText.setText(count.toString());
-            
-    //         display.setVisible(count > 0);
-    //     }
-    // }
-
-    // private updateAllBlockCounts(): void {
-    //     Object.values(BlockType).forEach(blockType => {
-    //         if (typeof blockType === 'number') {
-    //             this.updateBlockCount(blockType);
-    //         }
-    //     });
-    // }
 
     private updateToolDisplay(): void {
         const tool = this.inventory.getEquippedTool();
@@ -241,7 +186,13 @@ export class InventoryUI extends Phaser.GameObjects.Container {
         this.inventory.off('blocksChanged', this.onBlocksChanged, this);
         this.inventory.off('toolSelected', this.onToolSelected, this);
         this.inventory.off('toolAdded', this.onToolAdded, this);
-        this.moneyManager.off('moneyChanged', this.onMoneyChanged, this);
+        
+        this.allUIElements.forEach(element => {
+            if (element && element.destroy) {
+                element.destroy();
+            }
+        });
+        
         super.destroy();
     }
 }
