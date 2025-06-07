@@ -3,8 +3,6 @@ import PlayerController, { PlayerStateName } from "../PlayerController";
 import PlayerState from "./PlayerState";
 
 export default class PlayerIdleState extends PlayerState {
-    private canClimbWall: () => boolean;
-
     constructor(
         sprite: Phaser.Physics.Arcade.Sprite,
         keys: ControlKeys,
@@ -27,7 +25,12 @@ export default class PlayerIdleState extends PlayerState {
             this.controller.setState(PlayerStateName.ATTACK);
         }
 
-        if (Phaser.Input.Keyboard.JustDown(this.keys.interact) && this.controller.canClimbWall()) {
+        if (this.keys.interact.isDown) {
+            this.controller.setState(PlayerStateName.SELECT);
+        }
+
+
+        if (Phaser.Input.Keyboard.JustDown(this.keys.down) && this.controller.canClimbWall()) {
             this.controller.setState(PlayerStateName.WALL_CLIMB);
         }
     }

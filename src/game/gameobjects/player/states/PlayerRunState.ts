@@ -39,7 +39,7 @@ export default class PlayerRunState extends PlayerState {
       this.controller.setState(PlayerStateName.ATTACK);
     }
 
-    if (Phaser.Input.Keyboard.JustDown(this.keys.interact) && this.controller.canClimbWall()) {
+    if (Phaser.Input.Keyboard.JustDown(this.keys.down) && this.controller.canClimbWall()) {
         this.controller.setState(PlayerStateName.WALL_CLIMB);
     }
 }

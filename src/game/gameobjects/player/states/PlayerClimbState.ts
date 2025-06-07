@@ -52,7 +52,7 @@ export default class PlayerClimbState extends PlayerState {
             this.sprite.setVelocityY(0);
         }
 
-        if (Phaser.Input.Keyboard.JustDown(this.keys.interact)) {
+        if (Phaser.Input.Keyboard.JustDown(this.keys.down)) {
             this.exitWallClimbing();
             return;
         }

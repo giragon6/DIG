@@ -5,17 +5,23 @@ A game about digging a hole with your friends. Dig, get better gear, dig better,
 ### Controls
 Player 1
 - W: Jump/Cancel dig
+     \[Climb Mode\] Climb up
 - A: Run left/move selection left
+- S: Climb wall/exit climb
 - D: Run right/move selection right
 - Q: Enter dig mode
-- E: Mine (click repeatedly)
+- E: Tool select (hold down)
+     \[Dig Mode\] Mine (click repeatedly)
 
-Player 1
+Player 2
 - Up arrow: Jump/Cancel mine
+            \[Climb Mode\] Climb up
 - Left arrow: Run left/move selection left
+- Down arrow: Climb wall/exit climb
 - Right arrow: Run right/move selection right
 - /: Enter mine mode
 - SHIFT: Mine (click repeatedly)
+         \[Dig Mode\] Mine (click repeatedly)
 
 ### Current features
 - Couch co-op with 2 players
