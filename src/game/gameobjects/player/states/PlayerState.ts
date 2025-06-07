@@ -1,4 +1,4 @@
-import { ControlKeys } from "../../../../utils/types";
+import { ControlKeys } from "../../../../utils/types/controlTypes";
 import PlayerController from "../PlayerController";
 
 export default abstract class PlayerState {

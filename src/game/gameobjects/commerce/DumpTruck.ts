@@ -1,7 +1,11 @@
 import { BlockType } from "../../../utils/types/tileTypes";
 import { BlockValues } from "../../capitalism/BlockValue";
+import { LootBoxType } from "../../capitalism/LootBox";
 import { MoneyManager } from "../../capitalism/MoneyManager";
 import { Inventory } from "../player/inventory/Inventory";
+import { Tool } from "../player/inventory/items/Item";
+import { LootBoxUI } from "../UI/LootBoxUI";
+import { ControlKeys } from "../../../utils/types/controlTypes";
 
 export class DumpTruck extends Phaser.GameObjects.Container {
     scene: Phaser.Scene;
@@ -11,16 +15,21 @@ export class DumpTruck extends Phaser.GameObjects.Container {
     private moneyManager: MoneyManager;
     private interactionDistance: number;
 
+    private lootBoxUI: LootBoxUI;
+
     constructor(scene: Phaser.Scene, x: number, y: number, interactionDistance: number) {
         super(scene, x, y);
         this.scene = scene;
         this.moneyManager = MoneyManager.getInstance();
 
+        this.lootBoxUI = new LootBoxUI(scene);
+        this.lootBoxUI.on('lootBoxOpened', this.handleLootBoxOpened, this);
+        
         this.interactionDistance = interactionDistance;
 
         this.createSprite();
         this.createInteractionPrompt();
-        
+
         scene.add.existing(this);
     }
 
@@ -31,7 +40,7 @@ export class DumpTruck extends Phaser.GameObjects.Container {
     }
 
     private createInteractionPrompt(): void {
-        this.interactionPrompt = this.scene.add.text(0, -60, 'Press DOWN to sell blocks', {
+        this.interactionPrompt = this.scene.add.text(0, -60, 'Press DOWN to sell blocks | Press INTERACT to open shop', {
             fontSize: '14px',
             color: '#ffffff',
             backgroundColor: '#000000',
@@ -95,6 +104,10 @@ export class DumpTruck extends Phaser.GameObjects.Container {
         return { soldBlocks: totalBlocks, earnedMoney: totalValue };
     }
 
+    getLootBoxUI(): LootBoxUI {
+        return this.lootBoxUI;
+    }
+
     private showSaleSummary(soldItems: any[], totalValue: number): void {
         let summaryText = `SOLD:\n`;
         soldItems.forEach(item => {
@@ -147,5 +160,23 @@ export class DumpTruck extends Phaser.GameObjects.Container {
 
     isPlayerInRange(): boolean {
         return this.isPlayerNearby;
+    }
+
+    openLootBoxUI(playerId: string, controlKeys: ControlKeys): void {
+        if (this.isPlayerNearby) {
+            this.lootBoxUI.showForPlayer(playerId, controlKeys);
+        }
+    }
+
+    closeLootBoxUI(): void {
+        this.lootBoxUI.hide();
+    }
+
+    isLootBoxUIOpen(): boolean {
+        return this.lootBoxUI.isOpen();
+    }
+
+    private handleLootBoxOpened(data: { tool: Tool, boxType: LootBoxType, playerId: string }): void {
+        this.emit('toolPurchased', data);
     }
 }

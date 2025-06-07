@@ -29,7 +29,7 @@ export default class Player {
         this.sprite.setTint(tint);
         this.sprite.setData('id', this.player_key);
         this.sprite.data.set('speed', 300);
-        this.sprite.data.set('jumpSpeed', 250);
+        this.sprite.data.set('jumpSpeed', 300);
 
         this.inventory = new Inventory(this.player_key);
 
@@ -57,6 +57,10 @@ export default class Player {
 
     addBlockToInventory(blockType: BlockType, quantity: number = 1): void {
         this.inventory.addBlocks(blockType, quantity);
+    }
+
+    setInteracting(isInteracting: boolean): void {
+        this._controller.setState(isInteracting ? PlayerStateName.INTERACT : PlayerStateName.IDLE);
     }
 
     destroy() {

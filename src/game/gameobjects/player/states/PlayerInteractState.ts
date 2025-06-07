@@ -16,9 +16,5 @@ export default class PlayerInteractState extends PlayerState {
         this.sprite.setVelocityX(0);
     }
 
-    update(): void {
-        if (this.keys.down.isDown) {
-            this.controller.setState(PlayerStateName.IDLE);
-        }
-    }
+    update(): void {}
 }

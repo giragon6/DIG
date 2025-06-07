@@ -1,14 +1,14 @@
 import { ControlKeys } from "../../../../utils/types/controlTypes";
-import { WorldScene } from "../../../../utils/types/sceneTypes";
 import PlayerController, { PlayerStateName } from "../PlayerController";
 import PlayerState from "./PlayerState";
 
 export default class PlayerIdleState extends PlayerState {
+    private canClimbWall: () => boolean;
+
     constructor(
         sprite: Phaser.Physics.Arcade.Sprite,
         keys: ControlKeys,
         controller: PlayerController,
-        private scene: WorldScene
     ) {
         super(sprite, keys, controller);
     }
@@ -19,17 +19,16 @@ export default class PlayerIdleState extends PlayerState {
     }
 
     update(): void {
-        if (this.keys.left.isDown) {
+        if (this.keys.left.isDown || this.keys.right.isDown) {
             this.controller.setState(PlayerStateName.RUN);
-        } else if (this.keys.right.isDown) {
-            this.controller.setState(PlayerStateName.RUN);
-        } else if (Phaser.Input.Keyboard.JustDown(this.keys.up) && this.sprite.body!.blocked.down) {
+        } else if (this.keys.up.isDown && this.sprite.body!.blocked.down) {
             this.controller.setState(PlayerStateName.JUMP);
         } else if (this.keys.attack.isDown) {
             this.controller.setState(PlayerStateName.ATTACK);
-        } else if (Phaser.Input.Keyboard.JustDown(this.keys.down)) {
-            this.scene.handleDumpTruckInteraction(this.sprite.getData('id'));
-            this.controller.setState(PlayerStateName.INTERACT);
+        }
+
+        if (Phaser.Input.Keyboard.JustDown(this.keys.interact) && this.controller.canClimbWall()) {
+            this.controller.setState(PlayerStateName.WALL_CLIMB);
         }
     }
 }

@@ -1,4 +1,4 @@
-import { ControlKeys } from "../../../../utils/types";
+import { ControlKeys } from "../../../../utils/types/controlTypes";
 import PlayerController, { PlayerStateName } from "../PlayerController";
 import PlayerState from "./PlayerState";
 
@@ -7,7 +7,7 @@ export default class PlayerJumpState extends PlayerState {
 
     constructor(sprite: Phaser.Physics.Arcade.Sprite, keys: ControlKeys, controller: PlayerController) {
         super(sprite, keys, controller);
-        this.jump_speed = sprite.data.get('jump_speed') || 200;
+        this.jump_speed = sprite.data.get('jumpSpeed') || 200;
     }
 
     enter() {

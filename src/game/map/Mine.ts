@@ -219,12 +219,4 @@ export default class Mine {
             }
         }
     }
-
-    getTileSize(): { width: number, height: number } {
-        const tile = this.groundLayer.getTileAt(0, 0);
-        if (tile) {
-            return { width: tile.width, height: tile.height };
-        }
-        return { width: 0, height: 0 }; 
-    }
 }

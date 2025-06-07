@@ -3,6 +3,8 @@ import { WorldScene } from '../../utils/types/sceneTypes';
 import World from '../map/World';
 import { InventoryUI } from '../gameobjects/UI/InventoryUI';
 import { DumpTruck } from '../gameobjects/commerce/DumpTruck';
+import { LootBoxType } from '../capitalism/LootBox';
+import { Tool } from '../gameobjects/player/inventory/items/Item';
 
 export class Game extends WorldScene {
     camera: Phaser.Cameras.Scene2D.Camera;
@@ -14,10 +16,13 @@ export class Game extends WorldScene {
 
     private inventoryUI1: InventoryUI;
     private inventoryUI2: InventoryUI;
+
     private playerMap: Map<string, Player> = new Map();
 
     private dumpTruck: DumpTruck;
     private playerNearDumpTruck: Map<string, boolean> = new Map();    
+
+    private currentLootBoxPlayer: string | null = null;
 
     constructor() {
         super('Game');
@@ -58,12 +63,17 @@ export class Game extends WorldScene {
         this.playerMap.set('player1', this.player1);
         this.playerMap.set('player2', this.player2);
 
-        this.dumpTruck = new DumpTruck(this, dumpTruckSpawn.x, dumpTruckSpawn.y, 300);
+        this.dumpTruck = new DumpTruck(this, dumpTruckSpawn.x, dumpTruckSpawn.y - 32, 300);
+        this.dumpTruck.on('toolPurchased', this.handleToolPurchased, this);
 
         this.playerNearDumpTruck.set('player1', false);
         this.playerNearDumpTruck.set('player2', false);       
 
         this.setupInputHandlers();
+
+        this.dumpTruck.getLootBoxUI().on('lootBoxUIClosed', this.handleLootBoxUIClosed, this);
+
+        this.dumpTruck.getLootBoxUI().setDepth(1000);
 
         this.inventoryUI1 = new InventoryUI(this, 120, 50, this.player1.inventory).setScrollFactor(0);
         this.inventoryUI2 = new InventoryUI(this, this.cameras.main.width - 120, 50, this.player2.inventory).setScrollFactor(0);
@@ -76,10 +86,27 @@ export class Game extends WorldScene {
     private setupInputHandlers(): void {
         for (const [playerId, player] of this.playerMap.entries()) {
             player.getControlKeys().down.on('down', () => {
-                this.handleDumpTruckInteraction(playerId);
+                if (!this.currentLootBoxPlayer || this.currentLootBoxPlayer !== playerId) {
+                    this.handleDumpTruckInteraction(playerId);
+                }
+            });
+            player.getControlKeys().interact.on('down', () => {
+                // if player isnt nearby, return
+                const playerNear = this.playerNearDumpTruck.get(playerId) || false;
+                if (!playerNear) return;
+                if (this.currentLootBoxPlayer && this.currentLootBoxPlayer !== playerId) return;
+
+                console.log(`${playerId} is interacting with the dump truck`);
+                this.handleLootBoxInteraction(playerId);
             });
         }
     }
+
+    private handleLootBoxUIClosed(playerId: string): void {
+        console.log(`Loot box UI closed for player ${playerId}`);
+        this.playerMap.get(playerId)?.setInteracting(false);
+        this.currentLootBoxPlayer = null;
+    };
 
     update(time: number, delta: number): void {
         this.world.update(time, delta);
@@ -87,6 +114,18 @@ export class Game extends WorldScene {
         this.player2.update();
 
         this.updateDumpTruckProximity();
+        this.checkLootBoxUIRange();
+    }
+
+    private checkLootBoxUIRange(): void {
+        if (this.currentLootBoxPlayer && this.dumpTruck.isLootBoxUIOpen()) {
+            const playerNear = this.playerNearDumpTruck.get(this.currentLootBoxPlayer) || false;
+            if (!playerNear) {
+                this.playerMap.get(this.currentLootBoxPlayer)!.setInteracting(false);
+                this.dumpTruck.closeLootBoxUI();
+                this.currentLootBoxPlayer = null;
+            }
+        }
     }
 
     private updateDumpTruckProximity(): void {
@@ -129,7 +168,6 @@ export class Game extends WorldScene {
     }
 
     handleDumpTruckInteraction(playerId: string): void {
-        console.log(`${playerId} pressed interact key`);
         const playerNear = this.playerNearDumpTruck.get(playerId) || false;
 
         if (playerNear) {
@@ -142,6 +180,24 @@ export class Game extends WorldScene {
         } else {
             console.log(`Player ${playerId} is not near the dump truck (distance check failed)`);
         }
+    }
+
+    private handleLootBoxInteraction(playerId: string): void {
+        const playerNear = this.playerNearDumpTruck.get(playerId) || false;
+
+        if (playerNear) {
+            const player = this.playerMap.get(playerId);
+            if (player) {
+                this.currentLootBoxPlayer = playerId;
+                this.playerMap.get(playerId)!.setInteracting(true);
+                this.dumpTruck.openLootBoxUI(playerId, player.getControlKeys());
+            }
+        }
+    }
+
+    private handleToolPurchased(data: { tool: Tool, boxType: LootBoxType, playerId: string }): void {
+        this.playerMap.get(data.playerId)!.inventory.addTool(data.tool);
+        console.log(`Player ${data.playerId} received ${data.tool.name} from ${data.boxType.name}`);
     }
 
     getWorld(): World {

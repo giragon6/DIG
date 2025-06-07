@@ -25,8 +25,6 @@ export class InventoryUI extends Phaser.GameObjects.Container {
     }
 
     private createMoneyDisplay(): void {
-        // get width of the scene
-
         this.moneyDisplay = this.scene.add.container(this.scene.scale.width/2 - 130, -10);
         
         const bg = this.scene.add.rectangle(0, 0, 130, 25, 0x228822);
@@ -127,6 +125,15 @@ export class InventoryUI extends Phaser.GameObjects.Container {
         this.inventory.on('blocksChanged', this.onBlocksChanged, this);
         this.inventory.on('toolSelected', this.onToolSelected, this);
         this.inventory.on('toolAdded', this.onToolAdded, this);
+        this.inventory.on('uiVisibilityChanged', (data: {playerId: string, isVisible: boolean}) => {
+            console.log(`UI visibility changed for player ${data.playerId}: ${data.isVisible}`);
+            if (data.playerId !== this.inventory.getPlayerId()) return;
+            if (data.isVisible) {
+                this.showToolSelector();
+            } else {
+                this.hideToolSelector();
+            } 
+        });
         this.moneyManager.on('moneyChanged', this.onMoneyChanged, this);
     }
 
@@ -143,16 +150,16 @@ export class InventoryUI extends Phaser.GameObjects.Container {
         }
     }
 
-    private onBlocksChanged(data: any): void {
+    private onBlocksChanged(): void {
         this.updateTotalBlockCount();
         // this.updateBlockCount(data.blockType);
     }
 
-    private onToolSelected(data: any): void {
+    private onToolSelected(): void {
         this.updateToolDisplay();
     }
 
-    private onToolAdded(data: any): void {
+    private onToolAdded(): void {
         this.updateToolDisplay();
     }
 
@@ -191,6 +198,7 @@ export class InventoryUI extends Phaser.GameObjects.Container {
         const currentIndex = this.inventory.getEquippedToolIndex();
         
         if (tool) {
+            console.log(`Updating tool display: ${tool.name} (ID: ${tool.id}) at index ${currentIndex}`);
             const toolIcon = this.toolDisplay.list.find(child => 
                 child.getData('toolIcon')
             ) as Phaser.GameObjects.Image;
@@ -218,11 +226,13 @@ export class InventoryUI extends Phaser.GameObjects.Container {
     }
 
     showToolSelector(): void {
+        console.log('Showing tool selector');
         this.isToolSelectorVisible = true;
         this.updateToolDisplay();
     }
 
     hideToolSelector(): void {
+        console.log('Hiding tool selector');
         this.isToolSelectorVisible = false;
         this.updateToolDisplay();
     }

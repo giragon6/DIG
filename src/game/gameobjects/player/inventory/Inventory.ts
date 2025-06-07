@@ -1,5 +1,5 @@
 import { BlockType } from "../../../../utils/types/tileTypes";
-import { BlockCollection, Tool, ToolType } from "./items/Item";
+import { BlockCollection, getDefaultTool, Tool } from "./items/Item";
 
 export class Inventory extends Phaser.Events.EventEmitter {
     private playerId: string;
@@ -25,13 +25,7 @@ export class Inventory extends Phaser.Events.EventEmitter {
             [BlockType.BT_BERYL]: 0
         };
 
-        this.addTool({
-            id: 'basic_pickaxe',
-            name: 'Basic Pickaxe',
-            type: ToolType.PICKAXE,
-            damage: 15,
-            efficiency: 1.0
-        });
+        this.addTool(getDefaultTool());
     }
 
     addBlocks(blockType: BlockType, amount: number): void {
@@ -148,6 +142,7 @@ export class Inventory extends Phaser.Events.EventEmitter {
     }
 
     getAllTools(): Tool[] {
+        console.log('getAllTools called', this.tools);
         return [...this.tools]; 
     }
 
@@ -163,6 +158,13 @@ export class Inventory extends Phaser.Events.EventEmitter {
 
     getPlayerId(): string {
         return this.playerId;
+    }
+
+    setUIVisible(isVisible: boolean): void {
+        this.emit('uiVisibilityChanged', {
+            playerId: this.playerId,
+            isVisible
+        });
     }
 
     destroy(): void {

@@ -1,18 +1,21 @@
 import { BlockType } from "../../../../../utils/types/tileTypes";
-
-export enum ToolType {
-    PICKAXE = 'pickaxe',
-    SHOVEL = 'shovel',
-    DRILL = 'drill'
-}
+import { LootBoxRarity } from "../../../../capitalism/LootBox";
 
 export interface Tool {
     id: string;
     name: string;
-    type: ToolType;
     damage: number;
     efficiency: number;
+    rarity: LootBoxRarity;
 }
+
+export const getDefaultTool = (): Tool => ({
+    id: 'basic_pickaxe',
+    name: 'Basic Pickaxe',
+    damage: 15,
+    efficiency: 1.0,
+    rarity: LootBoxRarity.COMMON
+});
 
 export interface BlockCollection {
     [BlockType.BT_EMPTY]: number; // necessary to index by BlockType

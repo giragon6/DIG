@@ -17,6 +17,9 @@ export default class World {
     private chunkWidthTiles: number = 16; 
     private chunkHeightTiles: number = 16; 
 
+    private readonly tileWidth: number = 64;
+    private readonly tileHeight: number = 64;
+
     private timer: number = 0;
 
     private terrainConfig: TerrainConfig = {
@@ -42,8 +45,8 @@ export default class World {
         this.addDepthLayerByIndex(4, 5, BlockType.BT_BEDROCK);
 
         this.map = scene.make.tilemap({
-            tileWidth: 64,
-            tileHeight: 64,
+            tileWidth: this.tileWidth,
+            tileHeight: this.tileHeight,
             width: this.worldWidthTiles,
             height: this.worldHeightTiles
         });
@@ -235,6 +238,6 @@ export default class World {
     }
 
     getTileSize(): { width: number, height: number } {
-        return this.mine.getTileSize();
+        return {width: this.tileWidth, height: this.tileHeight};
     }
 }

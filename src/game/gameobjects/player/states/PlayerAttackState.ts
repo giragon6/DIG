@@ -13,7 +13,7 @@ export default class PlayerAttackState extends PlayerState {
     private selectedTile: PlayerSelectedTile | null = null;
     private inventory: Inventory;
 
-    private readonly attackStrength: number = 10; //temp
+    private attackStrength: number; //temp
 
     constructor(
         sprite: Phaser.Physics.Arcade.Sprite,
@@ -26,6 +26,7 @@ export default class PlayerAttackState extends PlayerState {
         this.world = world;
         this.playerId = this.sprite.getData('id');
         this.inventory = inventory;
+        this.attackStrength = inventory.getMiningDamage();
     }
 
     enter() {
@@ -59,6 +60,7 @@ export default class PlayerAttackState extends PlayerState {
         } // Confirm attack/dig
         
         else if (Phaser.Input.Keyboard.JustDown(this.keys.up)) {
+            console.log("up key pressed");
             this.world.deselectTile(this.playerId);
             this.controller.setState(PlayerStateName.IDLE);
         } // Cancel attack/dig
@@ -83,7 +85,8 @@ export default class PlayerAttackState extends PlayerState {
               this.tilePosition.y == this.initialPosition!.y - 1 &&
               this.selectedTile?.adjacencies?.[Direction.UP]
             ) {
-              this.tilePosition.y -= 1;
+                console.log(this.selectedTile.adjacencies)
+                this.tilePosition.y -= 1;
             } // Go up if already at left edge
 
             this.selectedTile = this.world.selectTile(this.tilePosition.x, this.tilePosition.y, this.playerId);
