@@ -57,4 +57,4 @@ Player 4
 - Menu Background: "Free Summer Pixel Backgrounds" by Craftpix.net on itch.io
 - Sprite: "Hana Caraka - Base Character" by Otterisk on itch.io
 
-All other assets created by me using Aseprite
+All other assets created by me using Aseprite.
