@@ -15,7 +15,7 @@ export class MainMenu extends Scene
 
     create ()
     {
-        this.background = this.add.image(512, 384, 'menu_background');
+        this.background = this.add.image(512, 384, 'background1');
 
         this.logo = this.add.image(512, 300, 'logo').setScale(3);
 
@@ -37,30 +37,37 @@ export class MainMenu extends Scene
             align: 'center'
         }).setOrigin(0.5);
 
+        // Add tutorial button
+        this.add.text(512, 600, 'Press T for TUTORIAL', {
+            fontFamily: 'Arial Black', fontSize: 20, color: '#44ff44',
+            stroke: '#000000', strokeThickness: 3,
+            align: 'center'
+        }).setOrigin(0.5);
+
         this.input.keyboard?.on('keydown-ONE', () => {
             this.numPlayers = 1;
             this.title.setText('1 PLAYER SELECTED');
-        }
-        );
+        });
         this.input.keyboard?.on('keydown-TWO', () => {
             this.numPlayers = 2;
             this.title.setText('2 PLAYERS SELECTED');
-        }
-        );
+        });
         this.input.keyboard?.on('keydown-THREE', () => {
             this.numPlayers = 3;
             this.title.setText('3 PLAYERS SELECTED');
-        }
-        );
+        });
         this.input.keyboard?.on('keydown-FOUR', () => {
             this.numPlayers = 4;
             this.title.setText('4 PLAYERS SELECTED');
-        }
-        );
+        });
 
         this.input.keyboard?.on('keydown-E', () => {
             this.scene.start('Game', {numPlayers: this.numPlayers});
-        })
-        
+        });
+
+        // Add tutorial key handler
+        this.input.keyboard?.on('keydown-T', () => {
+            this.scene.start('Tutorial');
+        });
     }
 }

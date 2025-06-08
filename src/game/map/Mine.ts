@@ -36,7 +36,7 @@ export default class Mine {
     }
 
     getSurfaceAtX(worldX: number): number {
-        const tileX = Math.floor(worldX / 64); // Assuming 64px tile size
+        const tileX = Math.floor(worldX / 64); 
         
         for (let y = 0; y < this.map.height; y++) {
             const tile = this.groundLayer.getTileAt(tileX, y);
@@ -131,43 +131,27 @@ export default class Mine {
 
     private addOreVeins(chunk: number[][], chunkX: number, chunkY: number): number[][] {
         const seed = `${this.seed}_ore_${chunkX}_${chunkY}`;
-        const rand = new Random(seed);
 
-        let chanceMultiplier = 1.0;
-        const chanceReductionFactor = 0.4;
+        for (let y = 0; y < chunk.length; y++) {
+            for (let x = 0; x < chunk[0].length; x++) {
+                if (chunk[y][x] === BlockType.BT_EMPTY) {
+                    continue;
+                }
 
-        let validOres: OreLayerConfig[] = [];
-        for (const oreLayer of this.terrainConfig.oreLayers || []) {
-            if (chunkY * chunk.length >= oreLayer.startDepth &&
-                chunkY * chunk.length <= oreLayer.endDepth) {
-                validOres.push(oreLayer);
-            }
-        };
-        validOres = validOres.sort(() => rand.float() - 0.5); // shuffle
-
-        for (let i = 0; i < validOres.length; i++) {
-            const ore: OreLayerConfig = validOres[i];
-            const chance = ore.chance;
-            if (ore || rand.float() < chance!) {
-                const veinPath = TerrainGenerator.perlinNoise(
-                    chunk[0].length,
-                    chunk.length,
-                    0.1, // frequency
-                    1.0, // amplitude
-                    seed + `${this.seed}_${i}`
-                ).map(row => row.map(value => value > 0.5 ? 1 : 0)); // convert to binary path
+                const worldY = chunkY * chunk.length + y;
                 
-                for (let x = 0; x < chunk[0].length; x++) {
-                    for (let y = 0; y < chunk.length; y++) {
-                        if (veinPath[y] && veinPath[y][x] === 1 && 
-                            chunk[y][x] !== BlockType.BT_EMPTY) {
-                            chunk[y][x] = ore.blockType;
-                            console.log(`Added ore ${BlockType[ore.blockType]} at (${chunkX * chunk[0].length + x}, ${chunkY * chunk.length + y})`);
+                for (const oreLayer of this.terrainConfig.oreLayers || []) {
+                    if (worldY >= oreLayer.startDepth && worldY <= oreLayer.endDepth) {
+                        const blockSeed = `${seed}_${x}_${y}_${oreLayer.blockType}`;
+                        const blockRand = new Random(blockSeed);
+                        
+                        if (blockRand.float() < oreLayer.chance!) {
+                            chunk[y][x] = oreLayer.blockType;
+                            break;
                         }
                     }
                 }
             }
-            chanceMultiplier *= chanceReductionFactor; 
         }
         
         return chunk;

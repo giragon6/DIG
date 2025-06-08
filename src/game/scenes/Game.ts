@@ -88,7 +88,7 @@ export class Game extends WorldScene {
     }
 
     create(data: {numPlayers: number}) {
-        this.physics.world.setBounds(0, 0, 2304, 1296, true, true, true, false);
+        this.physics.world.setBounds(0, 0, 2304, 0, true, true, true, false);
         this.camera = this.cameras.main;
         this.world = new World(this);
         this.cameraManager = new CameraManager(this);
@@ -157,7 +157,7 @@ export class Game extends WorldScene {
                 const inventoryUI = new InventoryUI(
                     this, 
                     130 * cameraScale,
-                    100 * cameraScale, 
+                    150 * cameraScale, 
                     player.inventory
                 );
                 

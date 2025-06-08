@@ -1,5 +1,5 @@
 export class MoneyManager extends Phaser.Events.EventEmitter {
-    private currentMoney: number = 100;
+    private currentMoney: number = 0;
     private static instance: MoneyManager;
 
     constructor() {

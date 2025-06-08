@@ -7,6 +7,7 @@ export default class SelectionMap {
     constructor(scene: Phaser.Scene, map: Phaser.Tilemaps.Tilemap) {
         const selectionTileset = map.addTilesetImage('selection_tiles', 'selection_tiles');
         this.selectionLayer = map.createBlankLayer('selectionLayer', selectionTileset!, 0, 0)!;
+        this.selectionLayer.setDepth(1000);
         // this.selectionLayer.fill(SelectionType.ST_BLOCK_WO);
     }
 

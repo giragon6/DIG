@@ -84,14 +84,14 @@ export class CameraManager {
                 Math.floor(layoutConfig.height * gameHeight)
             );
 
-            camera.setBounds(0, 0, 2304, 1296);
+            camera.setBounds(0, 0, 2304, Infinity);
 
             if (targets[index]) {
                 camera.startFollow(targets[index], true, 0.05, 0.05);
             }
 
             if (playerCount > 1) {
-                camera.setBackgroundColor('#000000');
+                camera.setBackgroundColor('#088cf4');
                 this.addCameraBorder(camera, playerId);
             }
 
@@ -102,7 +102,6 @@ export class CameraManager {
     }
 
     private createUICamera(): void {
-        console.log('making ui camera')
         this.uiCamera = this.scene.cameras.add(0, 0, this.scene.cameras.main.width, this.scene.cameras.main.height);
         this.uiCamera.setScroll(0, 0);
         this.uiCamera.setBackgroundColor('rgba(0,0,0,0)');
@@ -139,20 +138,6 @@ export class CameraManager {
         );
         borderGraphics.setScrollFactor(0);
         borderGraphics.setDepth(1000);
-
-        const label = this.scene.add.text(
-            camera.x + 10,
-            camera.y + 10,
-            playerId.toUpperCase(),
-            {
-                fontSize: '16px',
-                color: '#ffffff',
-                backgroundColor: '#000000',
-                padding: { x: 4, y: 2 }
-            }
-        );
-        label.setScrollFactor(0);
-        label.setDepth(1001);
     }
 
     getCameraForPlayer(playerId: string): Phaser.Cameras.Scene2D.Camera | undefined {

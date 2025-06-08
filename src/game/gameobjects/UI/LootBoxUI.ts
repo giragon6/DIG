@@ -26,18 +26,18 @@ export class LootBoxUI extends Phaser.GameObjects.Container {
     }
 
     private createUI(): void {
-        this.background = this.scene.add.rectangle(0, 0, 600, 400, 0x000000, 0.95);
+        this.background = this.scene.add.rectangle(0, 0, 600, 600, 0x000000, 0.95);
         this.background.setStrokeStyle(3, 0xffffff);
         this.add(this.background);
 
-        const title = this.scene.add.text(0, -170, 'TOOL BOXES ( ATK = BUY | INT = EXIT)', {
+        const title = this.scene.add.text(0, -270, 'TOOL BOXES ( ATK = BUY | INT = EXIT)', {
             fontSize: '24px',
             color: '#ffffff',
             fontStyle: 'bold'
         }).setOrigin(0.5, 0.5);
         this.add(title);
 
-        const moneyDisplay = this.scene.add.text(0, -140, `Money: $${this.moneyManager.getMoney()}`, {
+        const moneyDisplay = this.scene.add.text(0, -240, `Money: $${this.moneyManager.getMoney()}`, {
             fontSize: '16px',
             color: '#44ff44'
         }).setOrigin(0.5, 0.5);
@@ -49,8 +49,8 @@ export class LootBoxUI extends Phaser.GameObjects.Container {
 
     private createLootBoxOptions(): void {
         const lootBoxTypes = LootBoxSystem.getLootBoxTypes();
-        const startY = -80;
-        const spacing = 80;
+        const startY = -180;
+        const spacing = 105;
 
         lootBoxTypes.forEach((boxType, index) => {
             const y = startY + (index * spacing);
@@ -63,7 +63,7 @@ export class LootBoxUI extends Phaser.GameObjects.Container {
     private createLootBoxOption(boxType: LootBoxType, x: number, y: number): Phaser.GameObjects.Container {
         const container = this.scene.add.container(x, y);
 
-        const bg = this.scene.add.rectangle(0, 0, 500, 60, boxType.color, 0.3);
+        const bg = this.scene.add.rectangle(0, 0, 500, 85, boxType.color, 0.3);
         bg.setStrokeStyle(2, boxType.color);
         container.add(bg);
 
@@ -81,10 +81,10 @@ export class LootBoxUI extends Phaser.GameObjects.Container {
         container.add(cost);
 
         const dropRatesText = this.getDropRatesText(boxType);
-        const dropRates = this.scene.add.text(0, 0, dropRatesText, {
+        const dropRates = this.scene.add.text(0, 25, dropRatesText, {
             fontSize: '12px',
             color: '#cccccc'
-        }).setOrigin(0.5, 0.7);
+        }).setOrigin(0.5);
         container.add(dropRates);
 
         const buyButton = this.scene.add.rectangle(180, 0, 80, 40, 0x44aa44);
@@ -227,27 +227,50 @@ export class LootBoxUI extends Phaser.GameObjects.Container {
     private showLootResult(tool: Tool): void {
         const resultContainer = this.scene.add.container(0, 0);
         
-        const resultBg = this.scene.add.rectangle(0, 0, 300, 150, 0x000000, 0.9);
+        const resultBg = this.scene.add.rectangle(0, 0, 300, 200, 0x000000, 0.9);
         resultBg.setStrokeStyle(3, LootBoxSystem.getRarityColor(tool.rarity || LootBoxRarity.COMMON));
         
-        const resultTitle = this.scene.add.text(0, -50, 'YOU GOT:', {
+        const resultTitle = this.scene.add.text(0, -70, 'YOU GOT:', {
             fontSize: '16px',
             color: '#ffffff'
         }).setOrigin(0.5, 0.5);
         
-        const toolName = this.scene.add.text(0, -20, tool.name, {
+        // Add tool icon
+        let toolIcon: Phaser.GameObjects.Image;
+        if (tool.type === 'pickaxe') {
+            toolIcon = this.scene.add.image(0, -40, 'pickaxes', tool.id);
+        } else {
+            // For backpacks
+            if (this.scene.textures.exists('backpacks')) {
+                toolIcon = this.scene.add.image(0, -40, 'backpacks', tool.id);
+            } else {
+                toolIcon = this.scene.add.image(0, -40, tool.id);
+            }
+        }
+        toolIcon.setDisplaySize(32, 32);
+        
+        const toolName = this.scene.add.text(0, -10, tool.name, {
             fontSize: '18px',
             color: '#ffffff',
             fontStyle: 'bold'
         }).setOrigin(0.5, 0.5);
         toolName.setTint(LootBoxSystem.getRarityColor(tool.rarity || LootBoxRarity.COMMON));
         
-        const toolStats = this.scene.add.text(0, 10, `Damage: ${tool.damage} | Efficiency: ${tool.efficiency}x`, {
-            fontSize: '12px',
-            color: '#cccccc'
-        }).setOrigin(0.5, 0.5);
+        let toolStats: Phaser.GameObjects.Text;
+        if (tool.type === 'backpack') {
+            const backpack = tool as any;
+            toolStats = this.scene.add.text(0, 15, `+${backpack.capacityIncrease} Block Capacity`, {
+                fontSize: '12px',
+                color: '#cccccc'
+            }).setOrigin(0.5, 0.5);
+        } else {
+            toolStats = this.scene.add.text(0, 15, `Damage: ${tool.damage} | Efficiency: ${tool.efficiency}x`, {
+                fontSize: '12px',
+                color: '#cccccc'
+            }).setOrigin(0.5, 0.5);
+        }
         
-        const okButton = this.scene.add.text(0, 50, 'OK', {
+        const okButton = this.scene.add.text(0, 65, 'OK', {
             fontSize: '16px',
             color: '#44ff44',
             fontStyle: 'bold'
@@ -258,7 +281,7 @@ export class LootBoxUI extends Phaser.GameObjects.Container {
             resultContainer.destroy();
         });
         
-        resultContainer.add([resultBg, resultTitle, toolName, toolStats, okButton]);
+        resultContainer.add([resultBg, resultTitle, toolIcon, toolName, toolStats, okButton]);
         this.add(resultContainer);
         
         this.scene.time.delayedCall(5000, () => {

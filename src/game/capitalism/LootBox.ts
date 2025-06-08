@@ -1,4 +1,4 @@
-import { getDefaultTool, Tool } from "../gameobjects/player/inventory/items/Item";
+import { getDefaultTool, Tool, Backpack } from "../gameobjects/player/inventory/items/Item";
 
 export enum LootBoxRarity {
     COMMON = 'common',
@@ -29,15 +29,18 @@ export class LootBoxSystem {
                 name: 'Iron Pickaxe',
                 damage: 20,
                 efficiency: 1.2,
-                rarity: LootBoxRarity.COMMON
+                rarity: LootBoxRarity.COMMON,
+                type: 'pickaxe'
             },
             {
-                id: 'bronze_shovel',
-                name: 'Bronze Shovel',
-                damage: 18,
-                efficiency: 1.1,
-                rarity: LootBoxRarity.COMMON
-            }
+                id: 'small_backpack',
+                name: 'Small Backpack',
+                damage: 0,
+                efficiency: 1.0,
+                rarity: LootBoxRarity.COMMON,
+                type: 'backpack',
+                capacityIncrease: 20
+            } as Backpack
         ]],
         [LootBoxRarity.RARE, [
             {
@@ -45,47 +48,52 @@ export class LootBoxSystem {
                 name: 'Steel Pickaxe',
                 damage: 35,
                 efficiency: 1.5,
-                rarity: LootBoxRarity.RARE
+                rarity: LootBoxRarity.RARE,
+                type: 'pickaxe'
             },
             {
-                id: 'power_drill',
-                name: 'Power Drill',
-                damage: 40,
-                efficiency: 1.8,
-                rarity: LootBoxRarity.RARE
-            }
+                id: 'medium_backpack',
+                name: 'Medium Backpack',
+                damage: 0,
+                efficiency: 1.0,
+                rarity: LootBoxRarity.RARE,
+                type: 'backpack',
+                capacityIncrease: 60
+            } as Backpack
         ]],
         [LootBoxRarity.EPIC, [
             {
-                id: 'diamond_pickaxe',
-                name: 'Diamond Pickaxe',
+                id: 'gilded_pickaxe',
+                name: 'Gilded Pickaxe',
                 damage: 60,
                 efficiency: 2.2,
-                rarity: LootBoxRarity.EPIC
+                rarity: LootBoxRarity.EPIC,
+                type: 'pickaxe'
             },
             {
-                id: 'plasma_drill',
-                name: 'Plasma Drill',
-                damage: 75,
-                efficiency: 2.5,
-                rarity: LootBoxRarity.EPIC
-            }
+                id: 'large_backpack',
+                name: 'Large Backpack',
+                rarity: LootBoxRarity.EPIC,
+                type: 'backpack',
+                capacityIncrease: 100
+            } as Backpack
         ]],
         [LootBoxRarity.LEGENDARY, [
             {
-                id: 'quantum_excavator',
-                name: 'Quantum Excavator',
+                id: 'diamond_pickaxe',
+                name: 'Diamond Pickaxe',
                 damage: 120,
                 efficiency: 4.0,
-                rarity: LootBoxRarity.LEGENDARY
+                rarity: LootBoxRarity.LEGENDARY,
+                type: 'pickaxe'
             },
             {
-                id: 'void_breaker',
-                name: 'Void Breaker',
-                damage: 150,
-                efficiency: 5.0,
-                rarity: LootBoxRarity.LEGENDARY
-            }
+                id: 'void_backpack',
+                name: 'Void Backpack',
+                rarity: LootBoxRarity.LEGENDARY,
+                type: 'backpack',
+                capacityIncrease: 200
+            } as Backpack
         ]]
     ]);
 

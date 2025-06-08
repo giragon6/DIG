@@ -26,22 +26,22 @@ export default class World {
         surfaceLevel: 5,
         layers: [],
         oreLayers: [
-            { startDepth: 10, endDepth: 20, blockType: BlockType.BT_DIAMOND, chance: 0.0005 },
-            { startDepth: 15, endDepth: 25, blockType: BlockType.BT_RUBY, chance: 0.001 },
-            { startDepth: 20, endDepth: 30, blockType: BlockType.BT_SODALITE, chance: 0.0015 },
-            { startDepth: 25, endDepth: 40, blockType: BlockType.BT_BERYL, chance: 0.002 }
+            { startDepth: 200, endDepth: 325, blockType: BlockType.BT_DIAMOND, chance: 0.01 },
+            { startDepth: 50, endDepth: 150, blockType: BlockType.BT_RUBY, chance: 0.04 },
+            { startDepth: 30, endDepth: 100, blockType: BlockType.BT_SODALITE, chance: 0.05 },
+            { startDepth: 125, endDepth: 300, blockType: BlockType.BT_BERYL, chance: 0.03 }
         ]
     };
 
     constructor(scene: Phaser.Scene) {
         this.scene = scene;
         this.worldWidthTiles = 100;
-        this.worldHeightTiles = 1000;
+        this.worldHeightTiles = 10000;
 
         this.addDepthLayerByIndex(0, 5, BlockType.BT_EMPTY);
-        this.addDepthLayerByIndex(1, 5, BlockType.BT_DIRT);
-        this.addDepthLayerByIndex(2, 5, BlockType.BT_LIGHT_STONE);
-        this.addDepthLayerByIndex(3, 5, BlockType.BT_DARK_STONE);
+        this.addDepthLayerByIndex(1, 15, BlockType.BT_DIRT);
+        this.addDepthLayerByIndex(2, 100, BlockType.BT_LIGHT_STONE);
+        this.addDepthLayerByIndex(3, 200, BlockType.BT_DARK_STONE);
         this.addDepthLayerByIndex(4, 5, BlockType.BT_BEDROCK);
 
         this.map = scene.make.tilemap({

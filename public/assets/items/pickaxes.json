@@ -1,0 +1,58 @@
+{ "frames": {
+   "basic_pickaxe": {
+    "frame": { "x": 1, "y": 1, "w": 13, "h": 13 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 3, "y": 3, "w": 11, "h": 11 },
+    "sourceSize": { "w": 16, "h": 16 },
+    "duration": 100
+   },
+   "iron_pickaxe": {
+    "frame": { "x": 15, "y": 1, "w": 13, "h": 13 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 3, "y": 3, "w": 11, "h": 11 },
+    "sourceSize": { "w": 16, "h": 16 },
+    "duration": 100
+   },
+   "steel_pickaxe": {
+    "frame": { "x": 29, "y": 1, "w": 13, "h": 13 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 3, "y": 3, "w": 11, "h": 11 },
+    "sourceSize": { "w": 16, "h": 16 },
+    "duration": 100
+   },
+   "gilded_pickaxe": {
+    "frame": { "x": 1, "y": 15, "w": 13, "h": 13 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 3, "y": 3, "w": 11, "h": 11 },
+    "sourceSize": { "w": 16, "h": 16 },
+    "duration": 100
+   },
+   "diamond_pickaxe": {
+    "frame": { "x": 15, "y": 15, "w": 13, "h": 13 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 3, "y": 3, "w": 11, "h": 11 },
+    "sourceSize": { "w": 16, "h": 16 },
+    "duration": 100
+   }
+ },
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.x-dev",
+  "image": "pickaxes.png",
+  "format": "RGBA8888",
+  "size": { "w": 43, "h": 29 },
+  "scale": "1",
+  "frameTags": [
+  ],
+  "layers": [
+   { "name": "Layer 1", "opacity": 255, "blendMode": "normal" }
+  ],
+  "slices": [
+  ]
+ }
+}

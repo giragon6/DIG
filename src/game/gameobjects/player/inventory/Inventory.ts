@@ -1,19 +1,20 @@
 import { BlockType } from "../../../../utils/types/tileTypes";
-import { BlockCollection, getDefaultTool, Tool } from "./items/Item";
+import { BlockCollection, getDefaultTool, getDefaultBackpack, Tool, Backpack } from "./items/Item";
 
 export class Inventory extends Phaser.Events.EventEmitter {
     private playerId: string;
     private blocks: BlockCollection;
     private tools: Tool[] = [];
+    private backpacks: Backpack[] = [];
     private equippedToolIndex: number = 0; 
-    private maxBlockCount: number = 100;
+    private baseMaxBlockCount: number = 25;
 
     constructor(playerId: string) {
         super();
         this.playerId = playerId;
         
         this.blocks = {
-            [BlockType.BT_EMPTY]: 0, // necessary to index by BlockType
+            [BlockType.BT_EMPTY]: 0,
             [BlockType.BT_DIRT]: 0,
             [BlockType.BT_COBBLED_STONE]: 0,
             [BlockType.BT_BEDROCK]: 0,
@@ -26,6 +27,7 @@ export class Inventory extends Phaser.Events.EventEmitter {
         };
 
         this.addTool(getDefaultTool());
+        this.addBackpack(getDefaultBackpack());
     }
 
     addBlocks(blockType: BlockType, amount: number): void {
@@ -69,7 +71,9 @@ export class Inventory extends Phaser.Events.EventEmitter {
     }
 
     getMaxBlockCount(): number {
-        return this.maxBlockCount;
+        const bestBackpack = this.getBestBackpack();
+        const backpackCapacity = bestBackpack ? bestBackpack.capacityIncrease : 0;
+        return this.baseMaxBlockCount + backpackCapacity;
     }
 
     getAllBlocks(): BlockCollection {
@@ -77,12 +81,43 @@ export class Inventory extends Phaser.Events.EventEmitter {
     }
 
     addTool(tool: Tool): void {
-        this.tools.push(tool);
-        this.emit('toolAdded', {
+        if (tool.type === 'pickaxe') {
+            this.tools.push(tool);
+            this.emit('toolAdded', {
+                playerId: this.playerId,
+                tool,
+                toolIndex: this.tools.length - 1
+            });
+        } else if (tool.type === 'backpack') {
+            this.addBackpack(tool as Backpack);
+        }
+    }
+
+    addBackpack(backpack: Backpack): void {
+        this.backpacks.push(backpack);
+        this.emit('backpackAdded', {
             playerId: this.playerId,
-            tool,
-            toolIndex: this.tools.length - 1
+            backpack,
+            backpackIndex: this.backpacks.length - 1
         });
+        
+        this.emit('capacityChanged', {
+            playerId: this.playerId,
+            newCapacity: this.getMaxBlockCount()
+        });
+    }
+
+    getEquippedTool(): Tool | null {
+        return this.tools[this.equippedToolIndex] || null;
+    }
+
+    getAllTools(): Tool[] {
+        console.log('getAllTools called', this.tools);
+        return [...this.tools]; 
+    }
+
+    getEquippedToolIndex(): number {
+        return this.equippedToolIndex;
     }
 
     removeTool(index: number): Tool | null {
@@ -137,17 +172,30 @@ export class Inventory extends Phaser.Events.EventEmitter {
         }
     }
 
-    getEquippedTool(): Tool | null {
-        return this.tools[this.equippedToolIndex] || null;
+    getBestBackpack(): Backpack | null {
+        if (this.backpacks.length === 0) return null;
+        
+        return this.backpacks.reduce((best, current) => {
+            return current.capacityIncrease > best.capacityIncrease ? current : best;
+        });
     }
 
-    getAllTools(): Tool[] {
-        console.log('getAllTools called', this.tools);
-        return [...this.tools]; 
+    getEquippedBackpack(): Backpack | null {
+        return this.getBestBackpack();
     }
 
-    getEquippedToolIndex(): number {
-        return this.equippedToolIndex;
+    getAllBackpacks(): Backpack[] {
+        return [...this.backpacks]; 
+    }
+
+    getEquippedBackpackIndex(): number {
+        const bestBackpack = this.getBestBackpack();
+        if (!bestBackpack) return 0;
+        
+        return this.backpacks.findIndex(backpack => 
+            backpack.id === bestBackpack.id && 
+            backpack.capacityIncrease === bestBackpack.capacityIncrease
+        );
     }
 
     getMiningDamage(): number {
