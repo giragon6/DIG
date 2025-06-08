@@ -23,21 +23,38 @@ Player 2
 - SHIFT: Mine (click repeatedly)
          \[Dig Mode\] Mine (click repeatedly)
 
+Player 3
+- T: Jump/Cancel mine
+     \[Climb Mode\] Climb up
+- F: Run left/move selection left
+- G: Climb wall/exit climb
+- H: Run right/move selection right
+- R: ATK/Enter mine mode
+- Y: INT/Mine (click repeatedly)
+     \[Dig Mode\] Mine (click repeatedly)
+
+Player 4
+- I: Jump/Cancel mine
+     \[Climb Mode\] Climb up
+- J: Run left/move selection left
+- K: Climb wall/exit climb
+- L: Run right/move selection right
+- U: Enter mine mode
+- O: Mine (click repeatedly)
+     \[Dig Mode\] Mine (click repeatedly)
+
 ### Current features
-- Couch co-op with 2 players
+- Couch co-op with up to 4 players
 - Procedurally generated terrain
 - Selection and destruction of blocks
 - Different block types
-
-### Coming soon
-- Inventory system
-- Gear and a shop to buy it
-- More players (up to 4)
-- Refined terrain/ore generation
+- Equipment system and shop
 
 ## Attribution
 
 ### Assets
 - Block tiles: "Textures" by PiiiXL on itch.io
-- Background: "Free Summer Pixel Backgrounds" by Craftpix.net on itch.io
+- Menu Background: "Free Summer Pixel Backgrounds" by Craftpix.net on itch.io
 - Sprite: "Hana Caraka - Base Character" by Otterisk on itch.io
+
+All other assets created by me using Aseprite
